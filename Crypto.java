@@ -1,92 +1,87 @@
 package stega;
 
+import java.io.UnsupportedEncodingException;
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
 
-	public String s;
-	public String output;
-	private SecretKey desKey;
+	public SecretKeySpec aesKey;
 	
-	public SecretKey getKey() {
+	 public static byte[] encrypt(byte[] entrada, SecretKeySpec key){
+	      
+		 byte[] salida = new byte[0];
+		 
+		 try {
+	        Cipher cipher = Cipher.getInstance("AES");
+	        cipher.init(Cipher.ENCRYPT_MODE, key);
+	        salida = cipher.doFinal(entrada);
+	        
+		 }catch(Exception e) {
+			 
+			 throw new IllegalStateException("something is wrong", e);
+			 
+		 }
+		 
+		 return salida;
+	        
+	}
+	 
+	public static byte[] decrypt(byte[] entrada, SecretKeySpec key) {
+		
+		byte[] salida = new byte[0];
+		
+		try {
+			
+			Cipher cipher = Cipher.getInstance("AES");
+	        cipher.init(Cipher.DECRYPT_MODE, key);
+	        salida = cipher.doFinal(entrada);
+			
+		}catch(Exception e) {
+			
+			throw new IllegalStateException("something went wrong", e);
+			
+		}
+		
+		return salida;
+		
+	}
+	
+	public SecretKeySpec getKey() {
 		
 		
 		try {
 			
-			KeyGenerator keygenerator = KeyGenerator.getInstance("DES");
-			desKey = keygenerator.generateKey();
+			String secretKey = "javamolamucho111"; //debe de medir exactamente 16, 32 o 64 bits.... horas de desbugeo para esto...
+	        aesKey = new SecretKeySpec(secretKey.getBytes(), "AES");
 			
 			
 		}catch(Exception e) {
 			
-			System.out.println("Exception");
+			System.out.println("Exception in getKey");
 			
 		}
 		
-		return desKey;
+		return aesKey;
 		
 	}
 	
-	public String Encrypt(String input, SecretKey desKey) {
 	
-		try {
+	public static void main(String[] ag) throws UnsupportedEncodingException{
 		
-				
-				Cipher desCipher;
-				desCipher = Cipher.getInstance("DES");
-				
-				
-				desCipher.init(Cipher.ENCRYPT_MODE, desKey);
-				
-				byte[] encryptedText = desCipher.doFinal("TEST".getBytes());
-				
-				output = new String(encryptedText);
-				
-				System.out.println(s);
-				
-				
-		}catch(Exception e){
-			
-			System.out.println("Exception");
-			
-		}
-		
-		return output;
-		
-		
-		
-	}
-	
-	public String Decrypt(String input, SecretKey desKey) {
-		
-		try {
-			
-            Cipher desCipher = Cipher.getInstance("DES");
-
-            desCipher.init(Cipher.DECRYPT_MODE, desKey);
-            byte[] decrypted = desCipher.doFinal( input.getBytes() );
-            output = new String(decrypted);
-			
-			
-		}catch(Exception e) {
-			
-			System.out.println("Exception");
-			
-		}
-		
-		return output;
-		
-	}
-	
-	public static void main(String[] ag){
         Crypto test = new Crypto();
-        SecretKey clave = test.getKey();
-        String encriptado = test.Encrypt("TEST", clave);
-        String desencriptado = test.Decrypt(encriptado, clave);
+        SecretKeySpec clave = test.getKey();
         
-        System.out.println(desencriptado);
+        System.out.println(clave);
+        
+        String testS = "TEST";
+        byte[] encriptado = encrypt(testS.getBytes(), clave);
+        System.out.println(encriptado);
+        
+        byte[] desencriptado = decrypt(encriptado, clave);
+        String desencriptadoS = new String(desencriptado, "UTF-8"); //TODO: Añadir handle para la excepcion
+        
+        System.out.println(desencriptadoS);
     }
 	
 }
