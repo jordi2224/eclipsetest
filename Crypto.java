@@ -6,9 +6,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Crypto {
 
-	public SecretKeySpec aesKey;
+	private SecretKeySpec aesKey;
 	
-	 public static byte[] encrypt(byte[] entrada, SecretKeySpec key){
+	 public static byte[] encrypt(byte[] entrada, SecretKeySpec key){ //TODO que llame directamente al metodo getKey
 	      
 		 byte[] salida = new byte[0];
 		 
@@ -27,7 +27,7 @@ public class Crypto {
 	        
 	}
 	 
-	public static byte[] decrypt(byte[] entrada, SecretKeySpec key) {
+	public static byte[] decrypt(byte[] entrada, SecretKeySpec key) { //TODO que llame directamente al metodo getKey
 		
 		byte[] salida = new byte[0];
 		
@@ -47,14 +47,13 @@ public class Crypto {
 		
 	}
 	
-	public SecretKeySpec getKey() {
+	public SecretKeySpec getKey() { //TODO adaptar a recibir un string y devolver la clave generada
 		
 		
 		try {
 			
 			String secretKey = "javamolamucho111"; //debe de medir exactamente 16, 32 o 64 bits.... horas de desbugeo para esto...
 	        aesKey = new SecretKeySpec(secretKey.getBytes(), "AES");
-			
 			
 		}catch(Exception e) {
 			
@@ -67,14 +66,14 @@ public class Crypto {
 	}
 	
 	
-	public static void main(String[] ag) throws UnsupportedEncodingException{
+	public static void main(String[] ag) throws UnsupportedEncodingException{ 
 		
         Crypto test = new Crypto();
         SecretKeySpec clave = test.getKey();
         
         System.out.println(clave);
         
-        String testS = "TEST";
+        String testS = "k";
         byte[] encriptado = encrypt(testS.getBytes(), clave);
         System.out.println(encriptado);
         
