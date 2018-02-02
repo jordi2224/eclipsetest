@@ -28,9 +28,12 @@ public class ArchivoBMP {
 	public int pixelSize;		//Bits por pixel, generalmente 8 TODO rechazar imagenes con numero distintos
 	public int compresion;		//TODO LA APP DEBE RECHAZAR IMAGENES COMPRIMIDAS!!!!!
 	public byte[] RGBMat;		//Matriz RGB, incluye el padding
+	public byte[][] pixelMat;	//Esto deberia ser adaptado a cada tamaño posible	
 	int paddingBytes;			//Numero de bytes usados para el padding
 	int rowSize;				//Tamaño real en bytes de una fila (CUIDADO != sizeH*3*pixelSize)
 								//Incluye padding
+	
+	
 	
 	
 	ArchivoBMP(String ruta){
@@ -54,11 +57,14 @@ public class ArchivoBMP {
 			fSize = toInt(mirrorBytes(bytes, 2, 6), 0);
 			sizeOfHeader = toInt(mirrorBytes(bytes, 14, 18), 0);
 			pixelSize = toInt(mirrorBytes(bytes, 28, 30), 0);
-			
-			RGBMat = getRGBMat();
+
 			
 			paddingBytes = 4*(int) (Math.ceil( (double)(sizeH*3)/4)) - (sizeH*3); //TODO y si tiene transparencia??
 			rowSize = 4* (int) (Math.ceil( (double)(sizeH*3)/4));
+			
+			
+			RGBMat = genRGBMat();
+			pixelMat = genPixelMat();
 			
 		}catch(Exception e) {
 			 
@@ -76,6 +82,7 @@ public class ArchivoBMP {
 		System.out.println("Offset to matrix: " + matDist);
 		System.out.println("Header size: " + sizeOfHeader);
 		System.out.println("Compression: " + compresion);
+		System.out.println("Bits por pixel: " + pixelSize);
 		
 	}
 	
@@ -108,7 +115,7 @@ public class ArchivoBMP {
 		return new int[] {sizeH, sizeV};
 	}
 	
-	byte[] getRGBMat() { //TODO: evitar usar copyOfRange, no usar funciones externas
+	byte[] genRGBMat() {		//TODO: evitar usar copyOfRange, no usar funciones externas
 		
 		byte[] mat = new byte[bytes.length-matDist];
 		
@@ -116,6 +123,42 @@ public class ArchivoBMP {
 		
 		return mat;
 		
+	}
+	
+	public byte[][] genPixelMat(){
+		
+		byte[][] res = new byte[sizeV*sizeH][3];
+		int k = 0;
+		int l = 0;
+		int p = 0;
+		
+		for(int i = 0; i< sizeV; i++) {  //TODO Esto es basicamente un triple bucle for....
+			
+			for(int j = 0; j< rowSize - paddingBytes; j++) {
+
+				
+					System.out.println("Attempting to read pixel: " + p);
+					System.out.println("Subpixel: " + k);
+					System.out.println("Byte is: " + l);
+					
+					res[p][k] =  RGBMat[l];
+					
+					l++;
+					k++;
+					if (k == 3) {
+						k=0;
+						p++;
+					}
+
+				
+			}
+			
+			l= l+paddingBytes;
+			
+		}
+		
+		
+		return res;
 	}
 	
 	public static String toBinary( byte[] bytes )
@@ -126,7 +169,7 @@ public class ArchivoBMP {
 	    return sb.toString();
 	}
 	
-	public static int toInt(byte[] bytes, int offset) { //TODO: Reescribir esto
+	public static int toInt(byte[] bytes, int offset) { //TODO: Reescribir esto y hacer toInt(byte)
 		  int ret = 0;
 		  for (int i=0; i<4 && i+offset<bytes.length; i++) {
 		    ret <<= 8;
@@ -143,14 +186,34 @@ public class ArchivoBMP {
 		
 		file1.printInfo();
 		
-		int start = 54;
-		
-		for (int i = 0; i < file1.sizeV; i++) {
+		/*for (int i = 0; i < file1.sizeV; i++) {
 			System.out.println(toBinary(Arrays.copyOfRange(file1.getBytes(), start+i*file1.rowSize, start+((i+1)*file1.rowSize))));
-		}
+		}*/
+		
 		//System.out.println(toBinary(Arrays.copyOfRange(file1.getBytes(), file1.getBytes().length-10, file1.getBytes().length)));
-		System.out.println(file1.paddingBytes);
-		System.out.println(file1.rowSize);
+		
+		//System.out.println(file1.genPixelMat()[0]);
+		
+		for (int i = 0; i < file1.sizeH * file1.sizeV; i++) {
+			for (int j = 0; j < 3; j++) {
+				
+				System.out.println("Pixel: " + i);
+				
+				switch(j) {
+				case 0 : 
+					System.out.println("R: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
+					break;
+				case 1 :
+					System.out.println("G: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
+					break;
+				case 2 :
+					System.out.println("B: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
+					break;
+				}
+				
+			}
+		}
+		
 	}
 	
 }
