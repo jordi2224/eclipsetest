@@ -6,28 +6,40 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 import javax.swing.*;
-import javax.swing.filechooser.*;
 
 
 
 public class Ventana extends JFrame implements ActionListener {
 
-    private JLabel tPassword, tTitleEncrypt, tInputFile, tInputMat, tOutputFile;
+    private JLabel tPassword, tTitleEncrypt, tInputFile, tInputMat, tOutputFile; //TODO: una variable por linea
     private JLabel tCheckPass;
-    private JButton boton, selFichero1, selFichero2;          
+    private JLabel tDecryptPass;
+    private JLabel tTitleDecrypt;
+    private JLabel tEncryptedImage;
+    private JLabel tDEcryptedFile;
+    private JButton hideB, selFichero1, selFichero2;  
+    private JButton selFichero3;
+    private JButton decB;
     private JPasswordField passwordField, checkPassField;
+    private JPasswordField decryptionPass;
     private JTextField file1, file2, file3;
+    private JTextField fileD1;
+    private JTextField fileD2;
     private JTextArea log;
     private JFileChooser fc1;
     private JFileChooser fc2;
+    private JFileChooser fc3;
+    
     
     private static final long serialVersionUID = 1L;    //No estoy seguro de por que esto es necesario
     													//pero sin ello da warning
     
     Ventana(){ //Constructor
         //super();
-        setWindow();
-        startJComponents();
+        this.setWindow();
+        startLeftJComponents();
+        startRightJComponents();
+        startLog();
     }
 
     private void setWindow() {
@@ -40,9 +52,8 @@ public class Ventana extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
     }
-
-    private void startJComponents() { //TODO El log no tira, hacer su propia clase?
-    	
+    
+    private void startLog() { //TODO no tira, no hace scroll
     	//LOG{
     	
     	log = new JTextArea(5,2);
@@ -52,18 +63,78 @@ public class Ventana extends JFrame implements ActionListener {
 
     	
     	// }LOG
+        this.add(log);
+    	
+    }
+
+    private void startRightJComponents() {
+    	
+    	tTitleDecrypt = new JLabel();
+    	tEncryptedImage = new JLabel();
+    	tDEcryptedFile = new JLabel();
+    	tDecryptPass = new JLabel();
+    	fileD1 = new JTextField();
+    	fileD2 = new JTextField();
+    	selFichero3 = new JButton();
+    	decB = new JButton();
+    	decryptionPass = new JPasswordField();
+    	
+    	tTitleDecrypt.setText("Find a file");
+    	tTitleDecrypt.setBounds(650, 20, 100, 25);
+    	
+    	tEncryptedImage.setText("Input image:");
+        tEncryptedImage.setBounds(650, 80, 100, 30);
         
+        tDEcryptedFile.setText("Ouput File:");
+        tDEcryptedFile.setBounds(650, 110, 100, 30);
+        
+        tDecryptPass.setText("Password");
+        tDecryptPass.setBounds(650, 215, 100, 10);
+        
+        fileD1.setBounds(780, 80, 300, 30);
+        fileD2.setBounds(780, 110, 300, 30);
+    	
+        selFichero3.setText("...  3");
+        selFichero3.setBounds(1080, 80, 30, 30);
+        selFichero3.addActionListener(this);
+        fc3 = new JFileChooser();
+        fc3.setCurrentDirectory(new File(System.getProperty("user.home")));
+        
+        decB.setText("Decrypt");
+        decB.setBounds(650, 300, 200, 30);
+        decB.addActionListener(this);
+        
+        decryptionPass.setBounds(780, 210, 160, 25);
+        
+    	this.add(tTitleDecrypt);
+    	this.add(tEncryptedImage);
+    	this.add(tDEcryptedFile);
+    	this.add(fileD1);
+    	this.add(fileD2);
+    	this.add(selFichero3);
+    	this.add(decryptionPass);
+    	this.add(tDecryptPass);
+    	this.add(decB);
+    }
+    
+    private void startLeftJComponents() { //TODO El log no tira, hacer su propia clase?
+    	
+    	
+        //Botones de archivo
         fc1 = new JFileChooser();
         fc1.setCurrentDirectory(new File(System.getProperty("user.home"))); //TODO esto tira en windows?
         fc2 = new JFileChooser();
         fc2.setCurrentDirectory(new File(System.getProperty("user.home")));
         
+        //Etiquetas
         tPassword = new JLabel();
         tCheckPass = new JLabel();
         tTitleEncrypt = new JLabel();
         tInputFile = new JLabel();
         tInputMat = new JLabel();
         tOutputFile = new JLabel();
+        
+        //Campos de texto
         file1 = new JTextField();
         file2 = new JTextField();
         file3 = new JTextField();
@@ -72,9 +143,12 @@ public class Ventana extends JFrame implements ActionListener {
         checkPassField = new JPasswordField(10);
         checkPassField.addActionListener(this);
         
-        boton = new JButton();
+        //Botones
+        hideB = new JButton();
         selFichero1 = new JButton();
         selFichero2 = new JButton();
+        
+        
         
         tPassword.setText("Password:");    
         tPassword.setBounds(50, 215, 100, 10);
@@ -106,9 +180,9 @@ public class Ventana extends JFrame implements ActionListener {
         passwordField.setBounds(175, 210, 160, 25);
         checkPassField.setBounds(175, 240, 160, 25);
         
-        boton.setText("Hide");
-        boton.setBounds(50, 300, 200, 30);
-        boton.addActionListener(this);
+        hideB.setText("Hide");
+        hideB.setBounds(50, 300, 200, 30);
+        hideB.addActionListener(this);
         
         this.add(tPassword);
         this.add(tCheckPass);
@@ -123,8 +197,7 @@ public class Ventana extends JFrame implements ActionListener {
         this.add(file3);
         this.add(passwordField);
         this.add(checkPassField);
-        this.add(boton);
-        this.add(log);
+        this.add(hideB);
     }
 
     public void actionPerformed(ActionEvent e) {  //TODO esto es mejor en un case, en vez de getaction getID
@@ -136,13 +209,23 @@ public class Ventana extends JFrame implements ActionListener {
             
         	if (Arrays.equals(password, checkpass)) {
     	        log.append("Password ok!\n");
-            }else {
+    	        log.append(file1.getText() + "\n");
+    	        log.append(file2.getText() + "\n");
+    	        log.append(file3.getText() + "\n");
+    	        
+            }else{
             	
     	        JOptionPane.showMessageDialog(this, "Mismatch!");
 
             }
         	
+        }else if(e.getActionCommand().equals("Decrypt")){
+        	
+        	char[] password = decryptionPass.getPassword();
+        	log.append(new String(password) + "\n");
+        	
         }else if(e.getActionCommand().equals("...  1")){
+        
         	
         	int returnVal = fc1.showOpenDialog(this);
         	
@@ -160,6 +243,14 @@ public class Ventana extends JFrame implements ActionListener {
         		file2.setText(selectedFile.getAbsolutePath());
         	}
         	
+        }else if(e.getActionCommand().equals("...  3")) {
+        	
+        	int returnVal = fc3.showOpenDialog(this);
+        	
+        	if (returnVal == JFileChooser.APPROVE_OPTION) {
+        		File selectedFile = fc3.getSelectedFile();
+        		fileD1.setText(selectedFile.getAbsolutePath());
+        	}
         }
         
 	        

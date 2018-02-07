@@ -111,7 +111,7 @@ public class Crypto {
 		
 	}
 	
-	public static void main(String[] ag) throws UnsupportedEncodingException{ 
+	public static void main(String[] args) throws UnsupportedEncodingException{ 
 		
         Crypto test = new Crypto();
         
@@ -125,16 +125,6 @@ public class Crypto {
         
         System.out.println(textofinal);
         
-        /*
-        String testS = "k";
-        byte[] encriptado = encrypt(testS.getBytes(), testKey);
-        System.out.println(encriptado);
-        
-        byte[] desencriptado = decrypt(encriptado, testKey);
-        String desencriptadoS = new String(desencriptado, "UTF-8"); //TODO: Añadir handle para la excepcion
-        
-        System.out.println(desencriptadoS);
-        */
         
     }
 	

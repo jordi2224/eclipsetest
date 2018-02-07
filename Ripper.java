@@ -1,6 +1,8 @@
 package stega;
 
-//Reeeeeep! 
+import java.io.IOException;
+
+//Riiiiiiiip! 
 
 
 public class Ripper {
@@ -26,19 +28,38 @@ public class Ripper {
 		return bigBoss;
 	}
 	
-	 public static void main(String[] args) {
+	static byte[] insertBytes(byte[] vessel, byte payload, int N) throws IOException {
 		
-		 byte n = (byte) 63;
-		 byte m = (byte) 101;
-		 
-		 System.out.println( ArchivoBMP.toBinary(new byte[] {n} ) );
-		 System.out.println( ArchivoBMP.toBinary(new byte[] {m} ) +"\n");
-		 
-		 System.out.println( ArchivoBMP.toBinary(new byte[] {ripByte(n,1,0)} ) + " \n");
-		 
-		 System.out.println( ArchivoBMP.toBinary(new byte[] {insertBits(n , m , 2)} ) + " \n");
-		 
-		 System.out.println( ArchivoBMP.toInt(new byte[] {insertBits(n , m , 2)}, 0) + " \n");
+		if (N != 1 && N != 2 && N != 4) {
+			throw new IOException("Non divisible number");
+		}else if(8/N != vessel.length) {
+			throw new IOException("Wrong byte array length");
+		}else {
+			
+			System.out.println(ArchivoBMP.toBinary(vessel));
+			for (int i=0; i< vessel.length; i++) {
+				vessel[i]=ripByte(vessel[i], 1, 0);
+			}
+			System.out.println(ArchivoBMP.toBinary(vessel));
 
-	 }
+			
+		}
+		
+		return vessel;
+	}
+	
+	public static void main(String[] args) {
+		String ini = "1879";
+		byte target = ini.getBytes()[2];
+		System.out.println(ini.getBytes().length);
+		System.out.println(ArchivoBMP.toBinary(target));
+		
+		try {
+			insertBytes(ini.getBytes(), target, 2);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 }

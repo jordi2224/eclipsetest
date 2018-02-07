@@ -161,11 +161,17 @@ public class ArchivoBMP {
 		return res;
 	}
 	
-	public static String toBinary( byte[] bytes )
-	{
-	    StringBuilder sb = new StringBuilder(bytes.length * Byte.SIZE);
-	    for( int i = 0; i < Byte.SIZE * bytes.length; i++ )
-	        sb.append((bytes[i / Byte.SIZE] << i % Byte.SIZE & 0x80) == 0 ? '0' : '1');
+	public static String toBinary( byte[] bytes ){
+	    StringBuilder sb = new StringBuilder(bytes.length * 8);
+	    for( int i = 0; i < 8 * bytes.length; i++ )
+	        sb.append((bytes[i / 8] << i % 8 & 0x80) == 0 ? '0' : '1');
+	    return sb.toString();
+	}
+	
+	public static String toBinary( byte bb ) {
+		StringBuilder sb = new StringBuilder(8);
+		for( int i = 0; i < 8 ; i++ )
+	        sb.append((bb << i % 8 & 0x80) == 0 ? '0' : '1');
 	    return sb.toString();
 	}
 	
