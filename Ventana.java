@@ -7,7 +7,13 @@ import java.io.File;
 import java.util.Arrays;
 import javax.swing.*;
 
-
+/* Jorge Huete
+ * 
+ * Interfaz grafica del programa
+ * 
+ * Las variables de este codigo son un laberinto solo para los duros de mente
+ * 
+ */
 
 public class Ventana extends JFrame implements ActionListener {
 

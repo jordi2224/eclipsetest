@@ -1,6 +1,10 @@
 package stega;
 
-/*Jorge Huete
+import java.io.UnsupportedEncodingException;
+import java.nio.file.*;
+import java.util.Arrays;
+
+/* Jorge Huete
  * 
  * Este codigo es complicado de entender. En su concepto es un descodificador de archivos BMP.
  * Lee el header de los archivos recibidos y selecciona los bytes importantes para el programa.
@@ -11,16 +15,13 @@ package stega;
  * 
  */
 
-import java.io.UnsupportedEncodingException;
-import java.nio.file.*;
-import java.util.Arrays;
 
 public class ArchivoBMP {
 
 	public String ruta;			//Ruta al archivo BMP
 	public byte[] bytes;		//Todos los bytes del archivo
 	public byte[][] kilobytes;  //Bytes del archivo en kilobytes
-	private int matDist;		//Distancia en bytes a la matriz RGB, matriz empieza en bytes[matDist]
+	public int matDist;		//Distancia en bytes a la matriz RGB, matriz empieza en bytes[matDist]
 	public int sizeH;			//Tamaño horizontal en pixeles
 	public int sizeV;			//Tamaño vertical en pixeles
 	public int fSize;			//Tamaño en bytes del archivo segun el header (puede variar)
@@ -183,6 +184,8 @@ public class ArchivoBMP {
 		  }
 		  return ret;
 	}
+	
+	
 	
 	public static void main(String[] args) throws UnsupportedEncodingException {
 		

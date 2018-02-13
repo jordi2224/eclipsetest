@@ -2,8 +2,14 @@ package stega;
 
 import java.io.IOException;
 
-//Riiiiiiiip! 
+//Riiiiiiiip!
 
+/* Jorge Huete - Ripper
+ * 
+ * Esta clase contiene metodos para cortar, recortar e introducir bytes dentro de bytes
+ * Esta es la base del recorte del archivo origen
+ * 
+ */
 
 public class Ripper {
 
@@ -28,38 +34,19 @@ public class Ripper {
 		return bigBoss;
 	}
 	
-	static byte[] insertBytes(byte[] vessel, byte payload, int N) throws IOException {
-		
+	static byte[] insertBytes(byte[] vessel, byte payload, int N) throws IOException { 	//Inserta el byte payload recortado en vessel
+																						//N es el tamaño de recorte
 		if (N != 1 && N != 2 && N != 4) {
 			throw new IOException("Non divisible number");
 		}else if(8/N != vessel.length) {
 			throw new IOException("Wrong byte array length");
 		}else {
-			
-			System.out.println(ArchivoBMP.toBinary(vessel));
 			for (int i=0; i< vessel.length; i++) {
-				vessel[i]=ripByte(vessel[i], 1, 0);
+				vessel[i]=insertBits(vessel[i], (byte)(payload >> (8-(i+1)*N)), N);
 			}
-			System.out.println(ArchivoBMP.toBinary(vessel));
-
-			
 		}
 		
 		return vessel;
 	}
-	
-	public static void main(String[] args) {
-		String ini = "1879";
-		byte target = ini.getBytes()[2];
-		System.out.println(ini.getBytes().length);
-		System.out.println(ArchivoBMP.toBinary(target));
-		
-		try {
-			insertBytes(ini.getBytes(), target, 2);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-	}
 }

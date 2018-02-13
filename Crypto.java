@@ -4,6 +4,14 @@ import java.io.UnsupportedEncodingException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+/* 
+ * Jorge Huete
+ * 
+ * Esta clase contiene los metodos necesarios para encriptar arrays de bytes
+ * No puedo asegurar la integridad de la informacion o la seguridad de la encriptacion
+ * 
+ */
+
 public class Crypto {
 
 	private String formattedKey;
