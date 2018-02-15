@@ -137,11 +137,12 @@ public class ArchivoBMP {
 			
 			for(int j = 0; j< rowSize - paddingBytes; j++) {
 
-				
+					/*
 					System.out.println("Attempting to read pixel: " + p);
 					System.out.println("Subpixel: " + k);
 					System.out.println("Byte is: " + l);
-					
+					*/
+				
 					res[p][k] =  RGBMat[l];
 					
 					l++;
@@ -189,7 +190,7 @@ public class ArchivoBMP {
 	
 	public static void main(String[] args) throws UnsupportedEncodingException {
 		
-		String ruta = "/home/jorge/eclipse-workspace/stega/bin/stega/BlissW.bmp";
+		String ruta = "/home/jorge/eclipse-workspace/stega/bin/stega/Bliss2.bmp";
 		
 		ArchivoBMP file1 = new ArchivoBMP(ruta);
 		
@@ -203,20 +204,21 @@ public class ArchivoBMP {
 		
 		//System.out.println(file1.genPixelMat()[0]);
 		
-		for (int i = 0; i < file1.sizeH * file1.sizeV; i++) {
-			for (int j = 0; j < 3; j++) {
-				
-				System.out.println("Pixel: " + i);
+		for (int i = 0; i < 4; i++) {
+			
+			System.out.println("\n Pixel: " + i);
+			
+			for (int j = 2; j >= 0; j--) {
 				
 				switch(j) {
-				case 0 : 
-					System.out.println("R: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
+				case 2 : 
+					System.out.print(" R: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
 					break;
 				case 1 :
-					System.out.println("G: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
+					System.out.print(" G: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
 					break;
-				case 2 :
-					System.out.println("B: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
+				case 0 :
+					System.out.print(" B: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
 					break;
 				}
 				
