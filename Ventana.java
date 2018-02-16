@@ -5,6 +5,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -19,6 +20,8 @@ import javax.swing.text.DefaultCaret;
  * 
  */
 
+//TODO: crear un override print en vez de append?
+//TODO: quitar los ...1 etc
 public class Ventana extends JFrame implements ActionListener {
 
     private JLabel tPassword, tTitleEncrypt, tInputFile, tInputMat, tOutputFile; //TODO: una variable por linea
@@ -27,7 +30,7 @@ public class Ventana extends JFrame implements ActionListener {
     private JLabel tTitleDecrypt;
     private JLabel tEncryptedImage;
     private JLabel tDEcryptedFile;
-    public JButton hideB, selFichero1, selFichero2;  
+    private JButton hideB, selFichero1, selFichero2;  
     private JButton selFichero3;
     private JButton decB;
     private JPasswordField passwordField, checkPassField;
@@ -228,15 +231,23 @@ public class Ventana extends JFrame implements ActionListener {
             char[] checkpass = checkPassField.getPassword();
             
         	if (Arrays.equals(password, checkpass) && password.length != 0) {
-    	        log.append("Password ok!\n");
-    	        log.append(file1.getText() + "\n");
-    	        log.append(file2.getText() + "\n");
-    	        log.append(file3.getText() + "\n");
-    	        
+    	        if(file1.getText().length() == 0 || file2.getText().length() == 0 || file3.getText().length() == 0 ) {
+    	        	JOptionPane.showMessageDialog(this, "Missing Inputs for Encryption!");
+    	        }else {
+    	        	log.append("Encrypting:\n");
+	    	        log.append(file1.getText() + "\n");
+	    	        log.append(file2.getText() + "\n");
+	    	        log.append(file3.getText() + "\n");
+	    	        
+	    	        try {
+						Core.encrypt(this, file1.getText(), file2.getText(), password);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+	    	        
+    	        }
             }else if(password.length != 0){
-            	
     	        JOptionPane.showMessageDialog(this, "Password Mismatch!");
-
             }else {
             	JOptionPane.showMessageDialog(this, "Password Field Empty!!");
             }
@@ -244,7 +255,16 @@ public class Ventana extends JFrame implements ActionListener {
         }else if(e.getSource()==decB){
         	
         	char[] password = decryptionPass.getPassword();
-        	log.append(new String(password) + "\n");
+        	if(password.length == 0) {
+        		JOptionPane.showMessageDialog(this, "Password Field Empty!!");
+        	}else if(fileD1.getText().length() == 0 || fileD2.getText().length() == 0){
+        		JOptionPane.showMessageDialog(this, "Missing Inputs for Decryption!");
+        	}else {
+        		log.append("Decrypting:\n");
+        		log.append(fileD1.getText() + "\n");
+    	        log.append(fileD2.getText() + "\n");
+    	        //TODO: lo gordo, desencriptar
+        	}
         	
         }else if(e.getSource()==selFichero1){
         
@@ -278,6 +298,10 @@ public class Ventana extends JFrame implements ActionListener {
 	        
     }
 
+    public void print(String in) {
+    	this.log.append(in);
+    }
+    
     public static void main(String[] args) {
     	Ventana v = new Ventana();
     	v.log.append("Tloc, Nice! \n");

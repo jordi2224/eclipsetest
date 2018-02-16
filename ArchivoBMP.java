@@ -1,6 +1,6 @@
 package stega;
 
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.nio.file.*;
 import java.util.Arrays;
 
@@ -33,15 +33,17 @@ public class ArchivoBMP {
 	int paddingBytes;			//Numero de bytes usados para el padding
 	int rowSize;				//Tamaño real en bytes de una fila (CUIDADO != sizeH*3*pixelSize)
 								//Incluye padding
+	String fn;					//Nombre del archivo
 	
 	
 	
-	
-	ArchivoBMP(String ruta){
+	ArchivoBMP(String ruta) throws IOException{
 		
 		try {
 			this.ruta = ruta;
-			bytes = Files.readAllBytes(Paths.get(ruta));
+			Path p = Paths.get(ruta);
+			fn = p.getFileName().toString();
+			bytes = Files.readAllBytes(p);
 			
 			kilobytes = new byte[(int)(bytes.length/1024) +1][1024];
 			
@@ -51,13 +53,13 @@ public class ArchivoBMP {
 				}
 			}
 			
-			compresion = toInt(mirrorBytes(bytes, 30, 34), 0);
-			sizeH = toInt(mirrorBytes(bytes, 18, 22), 0);
-			sizeV = toInt(mirrorBytes(bytes, 22, 26), 0);
-			matDist = toInt(mirrorBytes(bytes, 10, 14), 0);
-			fSize = toInt(mirrorBytes(bytes, 2, 6), 0);
-			sizeOfHeader = toInt(mirrorBytes(bytes, 14, 18), 0);
-			pixelSize = toInt(mirrorBytes(bytes, 28, 30), 0);
+			compresion = Core.toInt(mirrorBytes(bytes, 30, 34), 0);
+			sizeH = Core.toInt(mirrorBytes(bytes, 18, 22), 0);
+			sizeV = Core.toInt(mirrorBytes(bytes, 22, 26), 0);
+			matDist = Core.toInt(mirrorBytes(bytes, 10, 14), 0);
+			fSize = Core.toInt(mirrorBytes(bytes, 2, 6), 0);
+			sizeOfHeader = Core.toInt(mirrorBytes(bytes, 14, 18), 0);
+			pixelSize = Core.toInt(mirrorBytes(bytes, 28, 30), 0);
 
 			
 			paddingBytes = 4*(int) (Math.ceil( (double)(sizeH*3)/4)) - (sizeH*3); //TODO y si tiene transparencia??
@@ -74,17 +76,21 @@ public class ArchivoBMP {
 		}
 	}
 	
-	void printInfo() {
+	String getInfo() {
 		
 		
-		System.out.println("Signature: " + (char)bytes[0] + (char)bytes[1]);
-		System.out.println("H x V: " + sizeH + " , " + sizeV);
-		System.out.println("Reported file size: " + fSize);
-		System.out.println("Offset to matrix: " + matDist);
-		System.out.println("Header size: " + sizeOfHeader);
-		System.out.println("Compression: " + compresion);
-		System.out.println("Bits por pixel: " + pixelSize);
+		return "Signature: " + (char)bytes[0] + (char)bytes[1]
+				+ "\nH x V: " + sizeH + " , " + sizeV
+				+ "\nReported file size: " + fSize
+				+ "\nOffset to matrix: " + matDist
+				+ "\nHeader size: " + sizeOfHeader
+				+ "\nCompression: " + compresion
+				+ "\nBits por pixel: " + pixelSize;
 		
+	}
+	
+	public String getName() {
+		return fn;
 	}
 	
 	byte[] getBytes(){
@@ -126,7 +132,7 @@ public class ArchivoBMP {
 		
 	}
 	
-	public byte[][] genPixelMat(){
+	public byte[][] genPixelMat(){ //TODO: UNPADDEDBYTES
 		
 		byte[][] res = new byte[sizeV*sizeH][3];
 		int k = 0;
@@ -137,12 +143,6 @@ public class ArchivoBMP {
 			
 			for(int j = 0; j< rowSize - paddingBytes; j++) {
 
-					/*
-					System.out.println("Attempting to read pixel: " + p);
-					System.out.println("Subpixel: " + k);
-					System.out.println("Byte is: " + l);
-					*/
-				
 					res[p][k] =  RGBMat[l];
 					
 					l++;
@@ -150,79 +150,16 @@ public class ArchivoBMP {
 					if (k == 3) {
 						k=0;
 						p++;
-					}
-
-				
+					}	
 			}
-			
 			l= l+paddingBytes;
-			
 		}
 		
 		
 		return res;
 	}
 	
-	public static String toBinary( byte[] bytes ){
-	    StringBuilder sb = new StringBuilder(bytes.length * 8);
-	    for( int i = 0; i < 8 * bytes.length; i++ )
-	        sb.append((bytes[i / 8] << i % 8 & 0x80) == 0 ? '0' : '1');
-	    return sb.toString();
+	public byte[][] getPixelMat(){
+		return pixelMat;
 	}
-	
-	public static String toBinary( byte bb ) {
-		StringBuilder sb = new StringBuilder(8);
-		for( int i = 0; i < 8 ; i++ )
-	        sb.append((bb << i % 8 & 0x80) == 0 ? '0' : '1');
-	    return sb.toString();
-	}
-	
-	public static int toInt(byte[] bytes, int offset) { //TODO: Reescribir esto 
-		  int ret = 0;
-		  for (int i=0; i<4 && i+offset<bytes.length; i++) {
-		    ret <<= 8;
-		    ret |= (int)bytes[i] & 0xFF;
-		  }
-		  return ret;
-	}
-	
-	public static void main(String[] args) throws UnsupportedEncodingException {
-		
-		String ruta = "/home/jorge/eclipse-workspace/stega/bin/stega/Bliss2.bmp";
-		
-		ArchivoBMP file1 = new ArchivoBMP(ruta);
-		
-		file1.printInfo();
-		
-		/*for (int i = 0; i < file1.sizeV; i++) {
-			System.out.println(toBinary(Arrays.copyOfRange(file1.getBytes(), start+i*file1.rowSize, start+((i+1)*file1.rowSize))));
-		}*/
-		
-		//System.out.println(toBinary(Arrays.copyOfRange(file1.getBytes(), file1.getBytes().length-10, file1.getBytes().length)));
-		
-		//System.out.println(file1.genPixelMat()[0]);
-		
-		for (int i = 0; i < 4; i++) {
-			
-			System.out.println("\n Pixel: " + i);
-			
-			for (int j = 2; j >= 0; j--) {
-				
-				switch(j) {
-				case 2 : 
-					System.out.print(" R: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
-					break;
-				case 1 :
-					System.out.print(" G: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
-					break;
-				case 0 :
-					System.out.print(" B: " + toInt(new byte[] {file1.pixelMat[i][j]}, 0));
-					break;
-				}
-				
-			}
-		}
-		
-	}
-	
 }
