@@ -1,17 +1,21 @@
 package stega;
 
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 
 /* Jorge Huete
  * 
  * Interfaz grafica del programa
  * 
  * Las variables de este codigo son un laberinto solo para los duros de mente
+ * 
+ * Dios tenga es su gloria a aquellos valientes que se adentran en esta clase...
  * 
  */
 
@@ -23,7 +27,7 @@ public class Ventana extends JFrame implements ActionListener {
     private JLabel tTitleDecrypt;
     private JLabel tEncryptedImage;
     private JLabel tDEcryptedFile;
-    private JButton hideB, selFichero1, selFichero2;  
+    public JButton hideB, selFichero1, selFichero2;  
     private JButton selFichero3;
     private JButton decB;
     private JPasswordField passwordField, checkPassField;
@@ -31,7 +35,7 @@ public class Ventana extends JFrame implements ActionListener {
     private JTextField file1, file2, file3;
     private JTextField fileD1;
     private JTextField fileD2;
-    private JTextArea log;
+    public JTextArea log;
     private JFileChooser fc1;
     private JFileChooser fc2;
     private JFileChooser fc3;
@@ -41,11 +45,12 @@ public class Ventana extends JFrame implements ActionListener {
     													//pero sin ello da warning
     
     Ventana(){ //Constructor
-        //super();
+        super();
         this.setWindow();
-        startLeftJComponents();
-        startRightJComponents();
-        startLog();
+        this.startLeftJComponents();
+        this.startRightJComponents();
+        this.startLog();
+        this.setVisible(true);
     }
 
     private void setWindow() {
@@ -62,14 +67,22 @@ public class Ventana extends JFrame implements ActionListener {
     private void startLog() { //TODO no tira, no hace scroll
     	//LOG{
     	
-    	log = new JTextArea(5,2);
+    	log = new JTextArea();
         log.setBounds(50, 360, 1100, 180);
         log.setEditable(false);
         log.setMargin(new Insets(5, 5, 5, 5)); //TODO Esto no va. REEEEEEEEEEEEEEE
-
-    	
+    	log.setLineWrap(true);
+    	DefaultCaret caret = (DefaultCaret)log.getCaret();
+    	caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE); 
     	// }LOG
-        this.add(log);
+        
+        //SCROLL{
+        JScrollPane scrollPane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setPreferredSize(new Dimension(200, 250));
+        scrollPane.setBounds(50, 360, 1117, 197);
+    	// }SCROLL
+        this.add(scrollPane);
     	
     }
 
@@ -208,29 +221,32 @@ public class Ventana extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {  //TODO esto es mejor en un case, en vez de getaction getID
     	
-        if (e.getActionCommand().equals("Hide")) { //Boton encriptacion
+    	
+        if (e.getSource()==hideB) { //Boton encriptacion
         	
         	char[] password = passwordField.getPassword();
             char[] checkpass = checkPassField.getPassword();
             
-        	if (Arrays.equals(password, checkpass)) {
+        	if (Arrays.equals(password, checkpass) && password.length != 0) {
     	        log.append("Password ok!\n");
     	        log.append(file1.getText() + "\n");
     	        log.append(file2.getText() + "\n");
     	        log.append(file3.getText() + "\n");
     	        
-            }else{
+            }else if(password.length != 0){
             	
-    	        JOptionPane.showMessageDialog(this, "Mismatch!");
+    	        JOptionPane.showMessageDialog(this, "Password Mismatch!");
 
+            }else {
+            	JOptionPane.showMessageDialog(this, "Password Field Empty!!");
             }
         	
-        }else if(e.getActionCommand().equals("Decrypt")){
+        }else if(e.getSource()==decB){
         	
         	char[] password = decryptionPass.getPassword();
         	log.append(new String(password) + "\n");
         	
-        }else if(e.getActionCommand().equals("...  1")){
+        }else if(e.getSource()==selFichero1){
         
         	
         	int returnVal = fc1.showOpenDialog(this);
@@ -240,7 +256,7 @@ public class Ventana extends JFrame implements ActionListener {
         		file1.setText(selectedFile.getAbsolutePath());
         	}
         	
-        }else if(e.getActionCommand().equals("...  2")) {
+        }else if(e.getSource()==selFichero2) {
         	
         	int returnVal = fc2.showOpenDialog(this);
         	
@@ -249,7 +265,7 @@ public class Ventana extends JFrame implements ActionListener {
         		file2.setText(selectedFile.getAbsolutePath());
         	}
         	
-        }else if(e.getActionCommand().equals("...  3")) {
+        }else if(e.getSource()==selFichero3) {
         	
         	int returnVal = fc3.showOpenDialog(this);
         	
@@ -263,8 +279,10 @@ public class Ventana extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        Ventana V = new Ventana();
-        V.setVisible(true);
-        V.log.append("Tloc. Nice!\n");
+    	Ventana v = new Ventana();
+    	v.log.append("Tloc, Nice! \n");
+    	v.log.append("Made by Jorge Huete: jorgehuetes@gmail.com \n");
+    	v.log.append("All permission for use, modification and distribution is hereby granted to all public"
+    			+ " as long as it is for good and not evil. \n\n\n");
     }
 }

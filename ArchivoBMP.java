@@ -21,7 +21,7 @@ public class ArchivoBMP {
 	public String ruta;			//Ruta al archivo BMP
 	public byte[] bytes;		//Todos los bytes del archivo
 	public byte[][] kilobytes;  //Bytes del archivo en kilobytes
-	public int matDist;		//Distancia en bytes a la matriz RGB, matriz empieza en bytes[matDist]
+	public int matDist;			//Distancia en bytes a la matriz RGB, matriz empieza en bytes[matDist]
 	public int sizeH;			//Tamaño horizontal en pixeles
 	public int sizeV;			//Tamaño vertical en pixeles
 	public int fSize;			//Tamaño en bytes del archivo segun el header (puede variar)
@@ -177,7 +177,7 @@ public class ArchivoBMP {
 	    return sb.toString();
 	}
 	
-	public static int toInt(byte[] bytes, int offset) { //TODO: Reescribir esto y hacer toInt(byte)
+	public static int toInt(byte[] bytes, int offset) { //TODO: Reescribir esto 
 		  int ret = 0;
 		  for (int i=0; i<4 && i+offset<bytes.length; i++) {
 		    ret <<= 8;
@@ -185,8 +185,6 @@ public class ArchivoBMP {
 		  }
 		  return ret;
 	}
-	
-	
 	
 	public static void main(String[] args) throws UnsupportedEncodingException {
 		

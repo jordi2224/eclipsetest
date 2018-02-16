@@ -11,6 +11,7 @@ import java.io.IOException;
  * 
  */
 
+
 public class Ripper {
 
 	static byte ripByte(byte original, int S, int F) { //"Corta" los bytes entre S y F de un byte TODO que compruebe que no es mayor de 8
