@@ -49,5 +49,13 @@ public class Ripper {
 		
 		return vessel;
 	}
+	
+	static byte[] recoverBytes(byte[] vessel) {
+		byte[] message = new byte[(int) Math.ceil((float)vessel.length/4)];
+		
+			
+		
+		return message;
+	}
 
 }

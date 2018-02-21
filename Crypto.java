@@ -1,6 +1,5 @@
 package stega;
 
-import java.io.UnsupportedEncodingException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -118,22 +117,5 @@ public class Crypto {
 		return formattedKey;
 		
 	}
-	
-	public static void main(String[] args) throws UnsupportedEncodingException{ 
-		
-        Crypto test = new Crypto();
-        
-        String miClave = "ClaveChula";
-        
-        byte[] enText = test.encrypt("TESTERINOPANYVINO".getBytes(), miClave);
-        
-        byte[] deText = test.decrypt(enText, miClave);
-        
-        String textofinal = new String(deText, "UTF-8");
-        
-        System.out.println(textofinal);
-        
-        
-    }
 	
 }

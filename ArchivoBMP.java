@@ -29,6 +29,7 @@ public class ArchivoBMP {
 	public int pixelSize;		//Bits por pixel, generalmente 8 TODO rechazar imagenes con numero distintos
 	public int compresion;		//TODO LA APP DEBE RECHAZAR IMAGENES COMPRIMIDAS!!!!!
 	public byte[] RGBMat;		//Matriz RGB, incluye el padding
+	public byte[] unpadMat;
 	public byte[][] pixelMat;	//Esto deberia ser adaptado a cada tamaño posible	
 	int paddingBytes;			//Numero de bytes usados para el padding
 	int rowSize;				//Tamaño real en bytes de una fila (CUIDADO != sizeH*3*pixelSize)
@@ -135,16 +136,19 @@ public class ArchivoBMP {
 	public byte[][] genPixelMat(){ //TODO: UNPADDEDBYTES
 		
 		byte[][] res = new byte[sizeV*sizeH][3];
+		unpadMat = new byte[sizeV*sizeH*3];
 		int k = 0;
 		int l = 0;
 		int p = 0;
+		int q = 0;
 		
 		for(int i = 0; i< sizeV; i++) {  //TODO Esto es basicamente un triple bucle for....
 			
 			for(int j = 0; j< rowSize - paddingBytes; j++) {
 
 					res[p][k] =  RGBMat[l];
-					
+					unpadMat[q] = RGBMat[l];
+					q++;
 					l++;
 					k++;
 					if (k == 3) {
@@ -162,4 +166,9 @@ public class ArchivoBMP {
 	public byte[][] getPixelMat(){
 		return pixelMat;
 	}
+
+	public byte[] getUnpadMat() {
+		return unpadMat;
+	}
+
 }

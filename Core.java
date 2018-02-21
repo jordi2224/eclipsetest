@@ -16,38 +16,51 @@ public class Core {
 			String fn = p1.getFileName().toString();
 			paquete = Files.readAllBytes(p1);
 			v.print("File loaded: " + fn + "\n");
+			v.print("\nFile size: " + paquete.length + " bytes.\n");
 		}catch (Exception e) {											//Si no encuentra el archivo origen
-			v.print("File not found\nFATAL ERROR!\n");	
+			v.print("\nFile not found\nFATAL ERROR!\n");	
 			throw new IllegalStateException("something is wrong", e);
 		}
 		
 		v.print("Loading image... \n");
 		ArchivoBMP origen = null;
-		byte[][] matOrigen = null;
+		byte[] matOrigen = null;
 		
 		try {
 			origen = new ArchivoBMP(ruta2);
-			v.print("Image loaded: " + origen.getName() + "\n");
+			v.print("\nImage loaded: " + origen.getName() + "\n");
 			v.print(origen.getInfo());
-			matOrigen = origen.getPixelMat();
+			matOrigen = origen.getUnpadMat(); //TODO: esto rompe
 			v.print("\nPixeles encontrados:" +  matOrigen.length);
+			
 		}catch (Exception e) { 											//Si no encuentra la imagen origen
-			v.print("Image not found\nFATAL ERROR!\n");	
+			v.print("\nImage not found\nFATAL ERROR!\n");	
 			throw new IllegalStateException("something is wrong", e);
 		}
+		v.print("\n\nEncrypting file....");
 		
-		byte[][] matDestino = new byte[matOrigen.length][3];
+		byte[] matDestino = matOrigen;
+		Crypto cr1 = new Crypto();
 		
-		int i = 0;
-		//TODO: encriptar origen... mucha pereza ahora mismo
-		while(i/4 < paquete.length) { //TODO convertirlo a for cuando este acabado TODO USAR UNPADDED MAT
-			byte[] hiddenbytes = Ripper.insertBytes(new byte[] {}, paquete[i], 2);
-			matDestino[(int) Math.floor((float)i/3)][0] = hiddenbytes[0];
-			matDestino[(int) Math.floor((float)i/3)][1] = hiddenbytes[1];
-			matDestino[(int) Math.floor((float)i/3)][2] = hiddenbytes[2];
-			matDestino[(int) Math.floor((float)i/3) + 1][0] = hiddenbytes[3];
-			i = i+4;
+		//TODO: "firmar" el paquete de informacion con "DONE" o similar
+		//TODO: "firmar" el paquete con el nombre y extension
+		
+		paquete = cr1.encrypt(paquete, password.toString());
+		
+		v.print("\n Done encrypting using AES 128bit"); //TODO escribir esto
+
+		v.print("\n Starting hide process");
+		for(int i = 0; i< paquete.length; i++) {
+			byte[] hiddenBytes = Ripper.insertBytes(new byte[] {matOrigen[i*4], matOrigen[i*4+1], matOrigen[i*4+2], matOrigen[i*4+3]}, paquete[i], 2);
+			matDestino[i*4]=hiddenBytes[0];
+			matDestino[i*4+1]=hiddenBytes[1];
+			matDestino[i*4+2]=hiddenBytes[2];
+			matDestino[i*4+3]=hiddenBytes[3];
 		}
+		v.print("\n Done hiding");
+		v.print("\n Final size of is " + matDestino.length + " bytes.");
+		v.print("\n First byte of encrypted is: " + toBinary(paquete[0]));
+		v.print("\n First 4 bytes of target are: " + toBinary(matDestino[0]) + " " + toBinary(matDestino[1]) + " " +toBinary(matDestino[2]) + " " + toBinary(matDestino[3]));
 	}
 	
 	public static String toBinary( byte[] bytes ){
