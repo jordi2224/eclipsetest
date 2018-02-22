@@ -240,7 +240,7 @@ public class Ventana extends JFrame implements ActionListener {
 	    	        log.append(file3.getText() + "\n");
 	    	        
 	    	        try {
-						Core.encrypt(this, file1.getText(), file2.getText(), password);
+						Core.encrypt(this, file1.getText(), file2.getText(), file3.getText(), password);
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -263,7 +263,7 @@ public class Ventana extends JFrame implements ActionListener {
         		log.append("Decrypting:\n");
         		log.append(fileD1.getText() + "\n");
     	        log.append(fileD2.getText() + "\n");
-    	        //TODO: lo gordo, desencriptar
+    	        Core.decrypt(this, fileD1.getText(), fileD2.getText(), password);
         	}
         	
         }else if(e.getSource()==selFichero1){
@@ -283,6 +283,7 @@ public class Ventana extends JFrame implements ActionListener {
         	if (returnVal == JFileChooser.APPROVE_OPTION) {
         		File selectedFile = fc2.getSelectedFile();
         		file2.setText(selectedFile.getAbsolutePath());
+        		file3.setText(selectedFile.getParent()+"/");
         	}
         	
         }else if(e.getSource()==selFichero3) {
@@ -292,6 +293,7 @@ public class Ventana extends JFrame implements ActionListener {
         	if (returnVal == JFileChooser.APPROVE_OPTION) {
         		File selectedFile = fc3.getSelectedFile();
         		fileD1.setText(selectedFile.getAbsolutePath());
+        		fileD2.setText(selectedFile.getParent()+"/");
         	}
         }
         
@@ -304,14 +306,11 @@ public class Ventana extends JFrame implements ActionListener {
     
     public static void main(String[] args) throws IOException {
     	Ventana v = new Ventana();
-    	/*
+    	
     	v.log.append("Tloc, Nice! \n");
     	v.log.append("Made by Jorge Huete: jorgehuetes@gmail.com \n");
     	v.log.append("All permission for use, modification and distribution is hereby granted to all public"
     			+ " as long as it is for good and not evil. \n\n\n");
-    	*/
     	
-    	Core.encrypt(v, "/home/jorge/Documents/Bliss2.xcf", "/home/jorge/Documents/Bliss.bmp", "test".toCharArray());
-    	Core.decrypt(v, "/home/jorge/Documents/Resultado.bmp", "", "test".toCharArray());
     }
 }

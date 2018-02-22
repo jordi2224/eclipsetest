@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class Core {
 
-	public static void encrypt(Ventana v, String ruta1, String ruta2, char[] password) throws IOException{ //TODO eliminar throw?
+	public static void encrypt(Ventana v, String ruta1, String ruta2, String ruta3, char[] password) throws IOException{ //TODO eliminar throw?
 
 		v.print("Loading file...\n");
 		byte[] paquete = null;
@@ -77,14 +77,14 @@ public class Core {
 		//v.print("\nOriginal size was " + origen.getBytes().length); //TODO añadir verificacion de tamaño
 		
 		v.print("\n\nAtempting to save file...");
-		try (FileOutputStream fos = new FileOutputStream("/home/jorge/Documents/Resultado.bmp")) {//TODO usar la entrada de la ventana para el nombre
+		try (FileOutputStream fos = new FileOutputStream(ruta3)) {//TODO usar la entrada de la ventana para el nombre
 			   fos.write(finalBytes);
 			   fos.close();
 		}catch (Exception e) {
 			v.print("\nError saving to file!\n");	
 			throw new IllegalStateException("something is wrong", e);
 		}
-		v.print("\nFile saved!");
+		v.print("\nFile saved at " + ruta3 + "!");
 		
 	}
 	
@@ -122,6 +122,21 @@ public class Core {
 			v.print("\nCould not find any valid data.\nThe selected image may not contain any information or password is wrong.");
 			throw new IllegalStateException("End of file reached without signature");
 		}
+		
+		v.print("\nStarting decryption...");
+		byte[] resultado = cr2.decrypt(Arrays.copyOfRange(paquete, 0, 16*blockStart), pass);
+		v.print("\nDone decrypting.");
+		
+		v.print("\n\nAttempting to save file.");
+		try (FileOutputStream fos = new FileOutputStream(outputName)) {
+			   fos.write(resultado);
+			   fos.close();
+		}catch (Exception e) {
+			v.print("\nError saving to file!\n");	
+			throw new IllegalStateException("something is wrong", e);
+		}
+		v.print("Done!");
+		
 	}
 	//recibido = cr1.decrypt(Arrays.copyOfRange(recibido, 0, paquete.length), pass);
 	

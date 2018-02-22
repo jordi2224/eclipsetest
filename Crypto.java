@@ -11,6 +11,8 @@ import javax.crypto.spec.SecretKeySpec;
  * 
  */
 
+//TODO: cambiar los prints a excepciones
+
 public class Crypto {
 	
 	
@@ -108,15 +110,6 @@ public class Crypto {
 		}
 		
 		return formattedKey;
-		
-	}
-	
-	public static void main(String args[]) {
-		
-		Crypto cr1 = new Crypto();
-		Crypto cr2 = new Crypto();
-		byte[] paquete = cr1.encrypt("SAYONARA".getBytes(), "aa");
-		System.out.println(new String(cr2.decrypt(paquete, "aa")));
 		
 	}
 	
