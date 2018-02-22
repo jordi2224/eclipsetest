@@ -302,11 +302,16 @@ public class Ventana extends JFrame implements ActionListener {
     	this.log.append(in);
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
     	Ventana v = new Ventana();
+    	/*
     	v.log.append("Tloc, Nice! \n");
     	v.log.append("Made by Jorge Huete: jorgehuetes@gmail.com \n");
     	v.log.append("All permission for use, modification and distribution is hereby granted to all public"
     			+ " as long as it is for good and not evil. \n\n\n");
+    	*/
+    	
+    	Core.encrypt(v, "/home/jorge/Documents/Bliss2.xcf", "/home/jorge/Documents/Bliss.bmp", "test".toCharArray());
+    	Core.decrypt(v, "/home/jorge/Documents/Resultado.bmp", "", "test".toCharArray());
     }
 }

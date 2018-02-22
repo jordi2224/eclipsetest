@@ -30,7 +30,8 @@ public class ArchivoBMP {
 	public int compresion;		//TODO LA APP DEBE RECHAZAR IMAGENES COMPRIMIDAS!!!!!
 	public byte[] RGBMat;		//Matriz RGB, incluye el padding
 	public byte[] unpadMat;
-	public byte[][] pixelMat;	//Esto deberia ser adaptado a cada tamaño posible	
+	public byte[][] pixelMat;	//Esto deberia ser adaptado a cada tamaño posible
+	public byte[] header;
 	int paddingBytes;			//Numero de bytes usados para el padding
 	int rowSize;				//Tamaño real en bytes de una fila (CUIDADO != sizeH*3*pixelSize)
 								//Incluye padding
@@ -69,6 +70,7 @@ public class ArchivoBMP {
 			
 			RGBMat = genRGBMat();
 			pixelMat = genPixelMat();
+			header = Arrays.copyOfRange(bytes, 0, matDist);
 			
 		}catch(Exception e) {
 			 
@@ -169,6 +171,10 @@ public class ArchivoBMP {
 
 	public byte[] getUnpadMat() {
 		return unpadMat;
+	}
+	
+	public byte[] getHeader(){
+		return header;
 	}
 
 }

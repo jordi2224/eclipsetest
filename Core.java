@@ -1,9 +1,11 @@
 package stega;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class Core {
 
@@ -30,7 +32,7 @@ public class Core {
 			origen = new ArchivoBMP(ruta2);
 			v.print("\nImage loaded: " + origen.getName() + "\n");
 			v.print(origen.getInfo());
-			matOrigen = origen.getUnpadMat(); //TODO: esto rompe
+			matOrigen = origen.getUnpadMat();
 			v.print("\nPixeles encontrados:" +  matOrigen.length);
 			
 		}catch (Exception e) { 											//Si no encuentra la imagen origen
@@ -41,11 +43,19 @@ public class Core {
 		
 		byte[] matDestino = matOrigen;
 		Crypto cr1 = new Crypto();
+		Crypto sign = new Crypto();
 		
-		//TODO: "firmar" el paquete de informacion con "DONE" o similar
 		//TODO: "firmar" el paquete con el nombre y extension
 		
-		paquete = cr1.encrypt(paquete, password.toString());
+		//byte[] metaPaquete = paquete;
+		String pass=new String(password);
+		v.print("\nSize of payload: "+ paquete.length);
+		paquete = concat(cr1.encrypt(paquete, pass),  sign.encrypt("SAYONARA".getBytes(), pass));
+		v.print("\nPayload: " + Arrays.toString(Arrays.copyOfRange(paquete, 0, 24)));
+		//v.print("\nExpected Signature: "+ Arrays.toString(sign.encrypt("SAYONARA".getBytes(), pass)));
+		//v.print("\nSignature is : " + Arrays.toString(Arrays.copyOfRange(paquete, paquete.length-16, paquete.length)));
+		//v.print("\nStarts at: "+ (paquete.length-16));
+		//v.print("\nDecrypted: " + new String(cr1.decrypt( Arrays.copyOfRange(paquete, paquete.length-16, paquete.length), pass)));
 		
 		v.print("\n Done encrypting using AES 128bit"); //TODO escribir esto
 
@@ -58,15 +68,71 @@ public class Core {
 			matDestino[i*4+3]=hiddenBytes[3];
 		}
 		v.print("\n Done hiding");
-		v.print("\n Final size of is " + matDestino.length + " bytes.");
-		v.print("\n First byte of encrypted is: " + toBinary(paquete[0]));
-		v.print("\n First 4 bytes of target are: " + toBinary(matDestino[0]) + " " + toBinary(matDestino[1]) + " " +toBinary(matDestino[2]) + " " + toBinary(matDestino[3]));
+		//v.print("\n Final size of is " + matDestino.length + " bytes.");
+		//v.print("\n First byte of encrypted is: " + toBinary(paquete[0]));
+		//v.print("\n First 4 bytes of target are: " + toBinary(matDestino[0]) + " " + toBinary(matDestino[1]) + " " +toBinary(matDestino[2]) + " " + toBinary(matDestino[3]));
+		
+		byte[] finalBytes = concat(origen.getHeader(), matDestino);
+		v.print("\n Final size of is " + finalBytes.length + " bytes.");
+		//v.print("\nOriginal size was " + origen.getBytes().length); //TODO añadir verificacion de tamaño
+		
+		v.print("\n\nAtempting to save file...");
+		try (FileOutputStream fos = new FileOutputStream("/home/jorge/Documents/Resultado.bmp")) {//TODO usar la entrada de la ventana para el nombre
+			   fos.write(finalBytes);
+			   fos.close();
+		}catch (Exception e) {
+			v.print("\nError saving to file!\n");	
+			throw new IllegalStateException("something is wrong", e);
+		}
+		v.print("\nFile saved!");
+		
 	}
+	
+	public static void decrypt(Ventana v, String inputPath, String outputName, char[] password) {
+		v.print("Loading image... \n");
+		ArchivoBMP origen = null;
+		byte[] matOrigen = null;
+		String pass = new String(password);
+		
+		try {
+			origen = new ArchivoBMP(inputPath);
+			v.print("\nImage loaded: " + origen.getName() + "\n");
+			v.print(origen.getInfo());
+			matOrigen = origen.getUnpadMat();
+			v.print("\nPixeles encontrados:" +  matOrigen.length);
+			
+		}catch (Exception e) { 											//Si no encuentra la imagen origen
+			v.print("\nImage not found\nFATAL ERROR!\n");	
+			throw new IllegalStateException("something is wrong", e);
+		}
+		v.print("\nExtracting data...");
+		byte[] paquete = Ripper.recoverBytes(matOrigen);
+		v.print(" Done!");
+		Crypto cr2 = new Crypto();
+		v.print("\nVerifying data...");
+		byte[] signature = cr2.encrypt("SAYONARA".getBytes(), pass);
+		int blockStart=0;
+		for(int i = 0; i< paquete.length/16; i++) {
+			if(Arrays.equals(Arrays.copyOfRange(paquete, i*16, (i+1)*16),signature)) {
+				v.print("\nSignature found at block: " + i + "!");
+				blockStart = i;
+			}
+		}
+		if(blockStart == 0) {
+			v.print("\nCould not find any valid data.\nThe selected image may not contain any information or password is wrong.");
+			throw new IllegalStateException("End of file reached without signature");
+		}
+	}
+	//recibido = cr1.decrypt(Arrays.copyOfRange(recibido, 0, paquete.length), pass);
 	
 	public static String toBinary( byte[] bytes ){
 	    StringBuilder sb = new StringBuilder(bytes.length * 8);
-	    for( int i = 0; i < 8 * bytes.length; i++ )
+	    for( int i = 0; i < 8 * bytes.length; i++ ) {
 	        sb.append((bytes[i / 8] << i % 8 & 0x80) == 0 ? '0' : '1');
+	    	if((i+1)%8 == 0 && i!=0){
+	    		sb.append(' ');
+	    	}
+	    }
 	    return sb.toString();
 	}
 	
@@ -84,6 +150,29 @@ public class Core {
 		    ret |= (int)bytes[i] & 0xFF;
 		  }
 		  return ret;
+	}
+	
+	public static byte[] concat(byte[]...arrays)
+	{
+	    // Determine the length of the result array
+	    int totalLength = 0;
+	    for (int i = 0; i < arrays.length; i++)
+	    {
+	        totalLength += arrays[i].length;
+	    }
+
+	    // create the result array
+	    byte[] result = new byte[totalLength];
+
+	    // copy the source arrays into the result array
+	    int currentIndex = 0;
+	    for (int i = 0; i < arrays.length; i++)
+	    {
+	        System.arraycopy(arrays[i], 0, result, currentIndex, arrays[i].length);
+	        currentIndex += arrays[i].length;
+	    }
+
+	    return result;
 	}
 	
 	
