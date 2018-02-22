@@ -1,4 +1,4 @@
-package stega;
+package stega.core;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,11 +7,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import stega.core.res.ArchivoBMP;
+import stega.core.res.Crypto;
+import stega.core.res.Ripper;
+import stega.ui.Ventana;
+
 public class Core {
 
 	public static void encrypt(Ventana v, String ruta1, String ruta2, String ruta3, char[] password) throws IOException{ //TODO eliminar throw?
 
-		v.print("Loading file...\n");
+		v.print("\nLoading file...\n");
 		byte[] paquete = null;
 		try {
 			Path p1 = Paths.get(ruta1);
@@ -47,35 +52,29 @@ public class Core {
 		
 		//TODO: "firmar" el paquete con el nombre y extension
 		
-		//byte[] metaPaquete = paquete;
 		String pass=new String(password);
 		v.print("\nSize of payload: "+ paquete.length);
 		paquete = concat(cr1.encrypt(paquete, pass),  sign.encrypt("SAYONARA".getBytes(), pass));
-		v.print("\nPayload: " + Arrays.toString(Arrays.copyOfRange(paquete, 0, 24)));
-		//v.print("\nExpected Signature: "+ Arrays.toString(sign.encrypt("SAYONARA".getBytes(), pass)));
-		//v.print("\nSignature is : " + Arrays.toString(Arrays.copyOfRange(paquete, paquete.length-16, paquete.length)));
-		//v.print("\nStarts at: "+ (paquete.length-16));
-		//v.print("\nDecrypted: " + new String(cr1.decrypt( Arrays.copyOfRange(paquete, paquete.length-16, paquete.length), pass)));
-		
-		v.print("\n Done encrypting using AES 128bit"); //TODO escribir esto
 
-		v.print("\n Starting hide process");
-		for(int i = 0; i< paquete.length; i++) {
-			byte[] hiddenBytes = Ripper.insertBytes(new byte[] {matOrigen[i*4], matOrigen[i*4+1], matOrigen[i*4+2], matOrigen[i*4+3]}, paquete[i], 2);
-			matDestino[i*4]=hiddenBytes[0];
-			matDestino[i*4+1]=hiddenBytes[1];
-			matDestino[i*4+2]=hiddenBytes[2];
-			matDestino[i*4+3]=hiddenBytes[3];
+		v.print("\nDone encrypting using AES 128bit");
+
+		v.print("\nStarting hide process");
+		try {
+			for(int i = 0; i< paquete.length; i++) {
+				byte[] hiddenBytes = Ripper.insertBytes(new byte[] {matOrigen[i*4], matOrigen[i*4+1], matOrigen[i*4+2], matOrigen[i*4+3]}, paquete[i], 2);
+				matDestino[i*4]=hiddenBytes[0];
+				matDestino[i*4+1]=hiddenBytes[1];
+				matDestino[i*4+2]=hiddenBytes[2];
+				matDestino[i*4+3]=hiddenBytes[3];
+			}
+		}catch (Exception e) {
+			v.print("\nFile too big! Try with smaller files or bigger image");
 		}
 		v.print("\n Done hiding");
-		//v.print("\n Final size of is " + matDestino.length + " bytes.");
-		//v.print("\n First byte of encrypted is: " + toBinary(paquete[0]));
-		//v.print("\n First 4 bytes of target are: " + toBinary(matDestino[0]) + " " + toBinary(matDestino[1]) + " " +toBinary(matDestino[2]) + " " + toBinary(matDestino[3]));
 		
 		byte[] finalBytes = concat(origen.getHeader(), matDestino);
-		v.print("\n Final size of is " + finalBytes.length + " bytes.");
-		//v.print("\nOriginal size was " + origen.getBytes().length); //TODO añadir verificacion de tamaño
-		
+		v.print("\nFinal size of is " + finalBytes.length + " bytes.");
+
 		v.print("\n\nAtempting to save file...");
 		try (FileOutputStream fos = new FileOutputStream(ruta3)) {//TODO usar la entrada de la ventana para el nombre
 			   fos.write(finalBytes);

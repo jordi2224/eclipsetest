@@ -1,4 +1,4 @@
-package stega;
+package stega.core.res;
 
 import java.io.IOException;
 
@@ -35,7 +35,7 @@ public class Ripper {
 		return bigBoss;
 	}
 	
-	static byte[] insertBytes(byte[] vessel, byte payload, int N) throws IOException { 	//Inserta el byte payload recortado en vessel
+	public static byte[] insertBytes(byte[] vessel, byte payload, int N) throws IOException { 	//Inserta el byte payload recortado en vessel
 																						//N es el tamaño de recorte
 		if (N != 1 && N != 2 && N != 4) {
 			throw new IOException("Non divisible number");
@@ -50,7 +50,7 @@ public class Ripper {
 		return vessel;
 	}
 	
-	static byte[] recoverBytes(byte[] vessel) {
+	public static byte[] recoverBytes(byte[] vessel) {
 		byte[] message = new byte[(int) Math.floor((float)vessel.length/4)];
 		
 		byte[] cVessel = new byte[ vessel.length-vessel.length%4]; //TODO añadir if para evitar hacer esto si ya sale perfecto
@@ -70,17 +70,5 @@ public class Ripper {
 		return message;
 	}
 	
-	/*
-	public static void main(String args[]) throws IOException {
-		byte[] ba = new byte[] {(byte) 255, 21, 31, (byte) 160};//, (byte) 231, 87, 32, 125, 123, 42, 18, 19, (byte) 130};
-		byte[] ba2 = insertBytes(ba, (byte)231, 2);
-		System.out.println(Core.toBinary(ba));
-		System.out.println(Core.toBinary(ba2));
-		System.out.println(Core.toBinary(recoverBytes(ba)));
-		System.out.println(Core.toBinary((byte)231));
-
-		
-	}
-	*/
 
 }

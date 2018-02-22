@@ -1,4 +1,4 @@
-package stega;
+package stega.core.res;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;

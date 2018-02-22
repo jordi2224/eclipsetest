@@ -1,4 +1,4 @@
-package stega;
+package stega.ui;
 
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
+
+import stega.core.Core;
 
 /* Jorge Huete
  * 
@@ -234,7 +236,7 @@ public class Ventana extends JFrame implements ActionListener {
     	        if(file1.getText().length() == 0 || file2.getText().length() == 0 || file3.getText().length() == 0 ) {
     	        	JOptionPane.showMessageDialog(this, "Missing Inputs for Encryption!");
     	        }else {
-    	        	log.append("Encrypting:\n");
+    	        	log.append("\nEncrypting:\n");
 	    	        log.append(file1.getText() + "\n");
 	    	        log.append(file2.getText() + "\n");
 	    	        log.append(file3.getText() + "\n");
@@ -260,7 +262,7 @@ public class Ventana extends JFrame implements ActionListener {
         	}else if(fileD1.getText().length() == 0 || fileD2.getText().length() == 0){
         		JOptionPane.showMessageDialog(this, "Missing Inputs for Decryption!");
         	}else {
-        		log.append("Decrypting:\n");
+        		log.append("\nDecrypting:\n");
         		log.append(fileD1.getText() + "\n");
     	        log.append(fileD2.getText() + "\n");
     	        Core.decrypt(this, fileD1.getText(), fileD2.getText(), password);
@@ -283,7 +285,7 @@ public class Ventana extends JFrame implements ActionListener {
         	if (returnVal == JFileChooser.APPROVE_OPTION) {
         		File selectedFile = fc2.getSelectedFile();
         		file2.setText(selectedFile.getAbsolutePath());
-        		file3.setText(selectedFile.getParent()+"/");
+        		file3.setText(selectedFile.getParent()+"/"); //TODO \ o /
         	}
         	
         }else if(e.getSource()==selFichero3) {
@@ -293,7 +295,7 @@ public class Ventana extends JFrame implements ActionListener {
         	if (returnVal == JFileChooser.APPROVE_OPTION) {
         		File selectedFile = fc3.getSelectedFile();
         		fileD1.setText(selectedFile.getAbsolutePath());
-        		fileD2.setText(selectedFile.getParent()+"/");
+        		fileD2.setText(selectedFile.getParent()+"/"); //TODO \ o /
         	}
         }
         

@@ -1,8 +1,10 @@
-package stega;
+package stega.core.res;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Arrays;
+
+import stega.core.Core;
 
 /* Jorge Huete
  * 
@@ -39,7 +41,7 @@ public class ArchivoBMP {
 	
 	
 	
-	ArchivoBMP(String ruta) throws IOException{
+	public ArchivoBMP(String ruta) throws IOException{
 		
 		try {
 			this.ruta = ruta;
@@ -79,7 +81,7 @@ public class ArchivoBMP {
 		}
 	}
 	
-	String getInfo() {
+	public String getInfo() {
 		
 		
 		return "Signature: " + (char)bytes[0] + (char)bytes[1]
