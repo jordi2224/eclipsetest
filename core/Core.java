@@ -28,11 +28,9 @@ public class Core {
 			v.print("\nFile not found\nFATAL ERROR!\n");	
 			throw new IllegalStateException("something is wrong", e);
 		}
-		
 		v.print("Loading image... \n");
 		ArchivoBMP origen = null;
 		byte[] matOrigen = null;
-		
 		try {
 			origen = new ArchivoBMP(ruta2);
 			v.print("\nImage loaded: " + origen.getName() + "\n");
@@ -44,18 +42,14 @@ public class Core {
 			v.print("\nImage not found\nFATAL ERROR!\n");	
 			throw new IllegalStateException("something is wrong", e);
 		}
-		v.print("\n\nEncrypting file....");
 		
+		v.print("\n\nEncrypting file....");
 		byte[] matDestino = matOrigen;
 		Crypto cr1 = new Crypto();
-		Crypto sign = new Crypto();
-		
-		//TODO: "firmar" el paquete con el nombre y extension
 		
 		String pass=new String(password);
 		v.print("\nSize of payload: "+ paquete.length);
-		paquete = concat(cr1.encrypt(paquete, pass),  sign.encrypt("SAYONARA".getBytes(), pass));
-
+		paquete = concat(cr1.encrypt(paquete, pass), cr1.encrypt(selExtension(ruta1).getBytes(), pass),cr1.encrypt("SAYONARA".getBytes(), pass));
 		v.print("\nDone encrypting using AES 128bit");
 
 		v.print("\nStarting hide process");
@@ -70,8 +64,8 @@ public class Core {
 		}catch (Exception e) {
 			v.print("\nFile too big! Try with smaller files or bigger image");
 		}
-		v.print("\n Done hiding");
 		
+		v.print("\n Done hiding");
 		byte[] finalBytes = concat(origen.getHeader(), matDestino);
 		v.print("\nFinal size of is " + finalBytes.length + " bytes.");
 
@@ -84,7 +78,6 @@ public class Core {
 			throw new IllegalStateException("something is wrong", e);
 		}
 		v.print("\nFile saved at " + ruta3 + "!");
-		
 	}
 	
 	public static void decrypt(Ventana v, String inputPath, String outputName, char[] password) {
@@ -92,7 +85,6 @@ public class Core {
 		ArchivoBMP origen = null;
 		byte[] matOrigen = null;
 		String pass = new String(password);
-		
 		try {
 			origen = new ArchivoBMP(inputPath);
 			v.print("\nImage loaded: " + origen.getName() + "\n");
@@ -123,10 +115,14 @@ public class Core {
 		}
 		
 		v.print("\nStarting decryption...");
-		byte[] resultado = cr2.decrypt(Arrays.copyOfRange(paquete, 0, 16*blockStart), pass);
+		byte[] resultado = cr2.decrypt(Arrays.copyOfRange(paquete, 0, 16*(blockStart-1)), pass);
+		byte[] extension = cr2.decrypt(Arrays.copyOfRange(paquete, 16*(blockStart-1), 16*blockStart), pass);
+		
 		v.print("\nDone decrypting.");
 		
 		v.print("\n\nAttempting to save file.");
+		outputName = outputName + new String(extension);
+		v.print(outputName);
 		try (FileOutputStream fos = new FileOutputStream(outputName)) {
 			   fos.write(resultado);
 			   fos.close();
@@ -137,7 +133,6 @@ public class Core {
 		v.print("Done!");
 		
 	}
-	//recibido = cr1.decrypt(Arrays.copyOfRange(recibido, 0, paquete.length), pass);
 	
 	public static String toBinary( byte[] bytes ){
 	    StringBuilder sb = new StringBuilder(bytes.length * 8);
@@ -150,14 +145,14 @@ public class Core {
 	    return sb.toString();
 	}
 	
-	public static String toBinary( byte bb ) {
+	public static String toBinary( byte bb ){
 		StringBuilder sb = new StringBuilder(8);
 		for( int i = 0; i < 8 ; i++ )
 	        sb.append((bb << i % 8 & 0x80) == 0 ? '0' : '1');
 	    return sb.toString();
 	}
 	
-	public static int toInt(byte[] bytes, int offset) { //TODO: Reescribir esto 
+	public static int toInt(byte[] bytes, int offset){ 
 		  int ret = 0;
 		  for (int i=0; i<4 && i+offset<bytes.length; i++) {
 		    ret <<= 8;
@@ -166,18 +161,15 @@ public class Core {
 		  return ret;
 	}
 	
-	public static byte[] concat(byte[]...arrays)
-	{
+	public static byte[] concat(byte[]...arrays){
 	    // Determine the length of the result array
 	    int totalLength = 0;
 	    for (int i = 0; i < arrays.length; i++)
 	    {
 	        totalLength += arrays[i].length;
 	    }
-
 	    // create the result array
 	    byte[] result = new byte[totalLength];
-
 	    // copy the source arrays into the result array
 	    int currentIndex = 0;
 	    for (int i = 0; i < arrays.length; i++)
@@ -185,9 +177,24 @@ public class Core {
 	        System.arraycopy(arrays[i], 0, result, currentIndex, arrays[i].length);
 	        currentIndex += arrays[i].length;
 	    }
-
 	    return result;
 	}
 	
-	
+	public static String selExtension(String ruta) {
+		char[] res = null;
+		for(int i = ruta.length()-1; i >0; i--) {
+			if (ruta.toCharArray()[i]=='.') {
+				char[] res2 = new char[ruta.length()-i];
+				int j=0;
+				while(i<ruta.length()) {
+					res2[j]=ruta.toCharArray()[i];
+					i++;
+					j++;
+				}
+				i=0; //Salimos del bucle for
+				res = res2;
+			}
+		}
+		return new String(res);
+	}
 }
