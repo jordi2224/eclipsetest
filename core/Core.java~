@@ -1,11 +1,7 @@
 package stega.core;
 
-/* Jorge Huete
- * 
- * Recursos de codigo
- * 
- */
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +14,7 @@ import stega.ui.Ventana;
 
 public class Core {
 
-	public static void encrypt(Ventana v, String ruta1, String ruta2, String ruta3, char[] password) throws Exception{ //TODO eliminar throw?
+	public static void encrypt(Ventana v, String ruta1, String ruta2, String ruta3, char[] password) throws IOException{ //TODO eliminar throw?
 
 		v.print("\nLoading file...\n");
 		byte[] paquete = null;
@@ -49,14 +45,8 @@ public class Core {
 		v.print("\nDone encrypting using AES 128bit");
 
 		v.print("\nStarting hide process");
-		try {
-			matOrigen=Ripper.insertByteArray(matOrigen, paquete);
-		}catch(Exception e){
-			v.print("\n\nSelected file is too big to hide in this image.");
-			v.print("\nPlease selected smaller file or bigger image.");
-			throw e;
-		}
-		v.print("\nDone hiding");
+		matOrigen=Ripper.insertByteArray(matOrigen, paquete);
+		v.print("\n Done hiding");
 
 		byte[] finalBytes = concat(origen.getHeader(), matOrigen);
 		v.print("\nFinal size of is " + finalBytes.length + " bytes.");
@@ -66,7 +56,7 @@ public class Core {
 		v.print("\nFile saved at " + ruta3 );
 	}
 	
-	public static void decrypt(Ventana v, String inputPath, String outputName, char[] password) throws Exception{
+	public static void decrypt(Ventana v, String inputPath, String outputName, char[] password) {
 
 		String pass = new String(password);
 
@@ -88,14 +78,14 @@ public class Core {
 		}
 		if(blockStart == 0) { //Si no encuentra la firma correcta
 			v.print("\nCould not find any valid data.\nThe selected image may not contain any information or password is wrong.");
-			throw new Exception("End of file reached without signature");
+			throw new IllegalStateException("End of file reached without signature");
 		}
 		
 		v.print("\nStarting decryption...");
 		byte[] resultado = Crypto.decrypt(Arrays.copyOfRange(paquete, 0, 16*(blockStart-1)), pass);
 		byte[] extension = Crypto.decrypt(Arrays.copyOfRange(paquete, 16*(blockStart-1), 16*blockStart), pass); //Recupera la extenion de la firma
 		pass = null;
-		password = null;
+		passwords = null;
 		v.print("\nDone decrypting.");
 		
 		v.print("\n\nAttempting to save file.");
@@ -185,17 +175,8 @@ public class Core {
 		try {
 			imagen = new ArchivoBMP(ruta);
 			v.print("\nImage loaded: " + imagen.getName() + "\n");
-			v.print(imagen.toString());
+			v.print(imagen.getInfo());
 			v.print("\nPixeles encontrados:" +  imagen.getUnpadMat().length);
-			
-			if(imagen.getCompresion()!=0) {
-				v.print("\nLa imagen seleccionada usa compresión. Vete a la mierda, paso muy fuertede hacer eso..."); //TODO, jorge eres gilipollas?
-				throw new IllegalStateException("Compression not null");
-			}
-			if(imagen.getBPP()!=24) {
-				v.print("\nLa imagen seleccionada no usa 8bits por color. Este versión solo funciona con 16581375 colores...");
-				throw new IllegalStateException("Wrong pixel size");
-			}
 			
 		}catch (Exception e) { 	//Si no encuentra la imagen origen
 			v.print("\nImage not found\nFATAL ERROR!\n");	

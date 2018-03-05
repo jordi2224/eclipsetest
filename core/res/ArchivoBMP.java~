@@ -62,8 +62,10 @@ public class ArchivoBMP {
 			fSize = Core.toInt(mirrorBytes(bytes, 2, 6), 0);
 			sizeOfHeader = Core.toInt(mirrorBytes(bytes, 14, 18), 0);
 			pixelSize = Core.toInt(mirrorBytes(bytes, 28, 30), 0);
+			
 			paddingBytes = 4*(int) (Math.ceil( (double)(sizeH*3)/4)) - (sizeH*3); //TODO y si tiene transparencia??
 			rowSize = 4* (int) (Math.ceil( (double)(sizeH*3)/4));
+			
 			RGBMat = genRGBMat();
 			pixelMat = genPixelMat();
 			header = Arrays.copyOfRange(bytes, 0, matDist);
@@ -73,26 +75,14 @@ public class ArchivoBMP {
 		}
 	}
 	
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Signature: ");
-		sb.append((char)bytes[0]);
-		sb.append((char)bytes[1]);
-		sb.append("\nH x V: ");
-		sb.append(sizeH);
-		sb.append(" , ");
-		sb.append(sizeV);
-		sb.append("\nReported file size: ");
-		sb.append(fSize);
-		sb.append("\nOffset to matrix: ");
-		sb.append(matDist);
-		sb.append("\nHeader size: ");
-		sb.append(sizeOfHeader);
-		sb.append("\nCompression: ");
-		sb.append(compresion);
-		sb.append("\nBits por pixel: ");
-		sb.append(pixelSize);
-		return sb.toString();
+	public String getInfo() { //TODO: toString()?
+		return "Signature: " + (char)bytes[0] + (char)bytes[1]
+				+ "\nH x V: " + sizeH + " , " + sizeV
+				+ "\nReported file size: " + fSize
+				+ "\nOffset to matrix: " + matDist
+				+ "\nHeader size: " + sizeOfHeader
+				+ "\nCompression: " + compresion
+				+ "\nBits por pixel: " + pixelSize;
 		
 	}
 	
@@ -169,11 +159,4 @@ public class ArchivoBMP {
 		return header;
 	}
 
-	public int getCompresion() {
-		return compresion;
-	}
-	
-	public int getBPP() {
-		return pixelSize;
-	}
 }

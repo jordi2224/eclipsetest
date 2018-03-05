@@ -91,9 +91,8 @@ public class Ventana extends JFrame implements ActionListener {
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(200, 250));
         scrollPane.setBounds(50, 360, 1117, 197);
-    	this.add(scrollPane);
     	// }SCROLL
-        
+        this.add(scrollPane);
     	
     }
 
@@ -227,7 +226,8 @@ public class Ventana extends JFrame implements ActionListener {
         this.add(hideB);
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {  //TODO esto es mejor en un case, en vez de getaction getID
+    	
     	
         if (e.getSource()==hideB) { //Boton encriptacion
         	
@@ -245,7 +245,7 @@ public class Ventana extends JFrame implements ActionListener {
 	    	        
 	    	        try {
 						Core.encrypt(this, file1.getText(), file2.getText(), file3.getText(), password);
-					} catch (Exception e1) {
+					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 	    	        
@@ -256,7 +256,7 @@ public class Ventana extends JFrame implements ActionListener {
             	JOptionPane.showMessageDialog(this, "Password Field Empty!!");
             }
         	
-        }else if(e.getSource()==decB){ //Boton desencriptacion
+        }else if(e.getSource()==decB){
         	
         	char[] password = decryptionPass.getPassword();
         	if(password.length == 0) {
@@ -267,14 +267,10 @@ public class Ventana extends JFrame implements ActionListener {
         		log.append("\nDecrypting:\n");
         		log.append(fileD1.getText() + "\n");
     	        log.append(fileD2.getText() + "\n");
-    	        try {
-					Core.decrypt(this, fileD1.getText(), fileD2.getText(), password);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+    	        Core.decrypt(this, fileD1.getText(), fileD2.getText(), password);
         	}
         	
-        }else if(e.getSource()==selFichero1){ //Seleccion de archivo 1
+        }else if(e.getSource()==selFichero1){
         
         	
         	int returnVal = fc1.showOpenDialog(this);
@@ -284,7 +280,7 @@ public class Ventana extends JFrame implements ActionListener {
         		file1.setText(selectedFile.getAbsolutePath());
         	}
         	
-        }else if(e.getSource()==selFichero2) { //Seleccion de archivo 2
+        }else if(e.getSource()==selFichero2) {
         	
         	int returnVal = fc2.showOpenDialog(this);
         	
@@ -294,7 +290,7 @@ public class Ventana extends JFrame implements ActionListener {
         		file3.setText(selectedFile.getParent()+Core.selSlash(selectedFile.getParent()));
         	}
         	
-        }else if(e.getSource()==selFichero3) { //Seleccion de archivo 3
+        }else if(e.getSource()==selFichero3) {
         	
         	int returnVal = fc3.showOpenDialog(this);
         	
