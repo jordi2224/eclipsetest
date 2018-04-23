@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.swing.*;
@@ -18,7 +17,7 @@ import stega.core.Core;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Component;
-
+import java.awt.Dimension;
 
 import stega.core.res.Password;
 import stega.core.res.PasswordTree;
@@ -40,7 +39,7 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     private JFileChooser fc3;
     
     
-    private static final long serialVersionUID = 1L; //TODO investigar esto
+    //private static final long serialVersionUID = 1L;
     private JTabbedPane tabbedPane;
     private JPanel panelOcultar;
     private JPanel panelBuscar;
@@ -101,17 +100,16 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     private Component horizontalStrut_13;
     private Component verticalStrut_2;
     private JButton savePasswordButton;
-    private JScrollBar scrollBar;
     private JScrollPane scrollPane;
     
     private PasswordTree passwords;
     
     Ventana(){ //Constructor
         super();
-        getContentPane().setLayout(new BorderLayout(0, 0));
+        /**/this.setLayout(new BorderLayout(0, 0));
         
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        getContentPane().add(tabbedPane, BorderLayout.CENTER);
+        /**/this.add(tabbedPane, BorderLayout.CENTER);
         
         panelOcultar = new JPanel();
         tabbedPane.addTab("Encrypt", null, panelOcultar, null);
@@ -356,17 +354,14 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
         	@Override
         	public void actionPerformed(ActionEvent e) {
     			Ventana.this.print("Attempting to load tree\n");
-        		/*try {
+        		try {
 					Ventana.this.passwords = Core.leerPass();
 	        		Ventana.this.rebuildTree();
 	        		Ventana.this.print("Password file loaded!\n");
 
-				}catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
-					Ventana.this.print("Could not find password file!\n");
 				}catch (IOException e1) {
 					Ventana.this.print("Error reading file!\n");
-				}*/
+				}
         	}
         });
         openSavePanel.add(openLibraryButton);
@@ -459,18 +454,20 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
         newPasswordPanel.add(savePasswordButton);
         
         log_panel = new JPanel();
-        getContentPane().add(log_panel, BorderLayout.SOUTH);
         this.setWindow();
         this.startLeftJComponents();
         this.startRightJComponents();
         this.startLog();
         this.setVisible(true);
+        
+        
+        
     }
 
     private void setWindow() {
     	
         this.setTitle("DimiX Stega");                   
-        this.setSize(800, 500);                                 
+        this.setSize(800, 450);                                 
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -478,32 +475,37 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     
     private void startLog() {
     	//LOG{
-    	log = new JTextArea();
-        log.setBounds(0, 0, (int) this.getSize().getWidth()-20, 200);
+    	log = new JTextArea(6,80);
         log.setEditable(false);
         log.setMargin(new Insets(5, 5, 5, 5));
     	log.setLineWrap(true);
     	DefaultCaret caret = (DefaultCaret)log.getCaret();
     	caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-    	log_panel.add(log);
+    	log.setMaximumSize(new Dimension(100,200));
+    	log_panel.setLayout(new BorderLayout(0, 0));
+    	log_panel.add(log,  BorderLayout.CENTER);
     	// }LOG
         
     	//RESIZE{
     	panelOcultar.addComponentListener(this);
     	//}RESIZE
+    	
         //SCROLL{
     	scrollPane = new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    	
-    	log_panel.add(scrollPane);
+    	log_panel.add(scrollPane, BorderLayout.CENTER);
     	// }SCROLL
-        
     	
+    	log_panel.setMaximumSize(new Dimension(10000,200));
+    	this.add(log_panel, BorderLayout.SOUTH);
+
     }
     
     public void componentResized(ComponentEvent e) {
-		log.setBounds(0, 0, (int) this.getSize().getWidth()-20, 200);
-		scrollPane.setBounds(0, 0, (int) this.getSize().getWidth()-20, 100);
+		log.setBounds(0, 0, (int) this.getSize().getWidth(), log_panel.getSize().height);
+		scrollPane.setBounds(0, 0, (int) this.getSize().getWidth(), log_panel.getSize().height);
+		
+		//this.print(""+this.getSize()+"\n");
 	}
 
     private void startRightJComponents() {
@@ -541,6 +543,9 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     	v.log.append("Made by Jorge Huete: jorgehuetes@gmail.com \n");
     	v.log.append("All permission for use, modification and distribution is hereby granted to all public"
     			+ " as long as it is for good and not evil. \n\n\n");
+    	
+    	v.setSize(801, 451); //Shhhhhh nuestro secreto
+    	
     }
     
     public void rebuildTree() {
@@ -563,13 +568,15 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-		// TODO Auto-generated method stub
+		log.setBounds(0, 0, (int) this.getSize().getWidth(), log_panel.getSize().height);
+		scrollPane.setBounds(0, 0, (int) this.getSize().getWidth(), log_panel.getSize().height);
 		
 	}
 
 	@Override
 	public void componentHidden(ComponentEvent e) {
-		// TODO Auto-generated method stub
+		log.setBounds(0, 0, (int) this.getSize().getWidth(), log_panel.getSize().height);
+		scrollPane.setBounds(0, 0, (int) this.getSize().getWidth(), log_panel.getSize().height);
 		
 	}
 }
