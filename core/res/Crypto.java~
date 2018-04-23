@@ -17,7 +17,7 @@ public class Crypto {
 	
 	
 	
-	public byte[] encrypt(byte[] entrada, String clave){ //Encripta los bytes entrantes con AES usando el string recibido
+	public static byte[] encrypt(byte[] entrada, String clave){ //Encripta los bytes entrantes con AES usando el string recibido
 	      
 		 byte[] salida = new byte[0];
 		 
@@ -37,7 +37,7 @@ public class Crypto {
 	        
 	}
 	 
-	public byte[] decrypt(byte[] entrada, String clave) { //Desencripta los bytes entrantes con AES usando el string recibido
+	public static byte[] decrypt(byte[] entrada, String clave) { //Desencripta los bytes entrantes con AES usando el string recibido
 		
 		byte[] salida = new byte[0];
 		SecretKeySpec key = genKey(clave);
@@ -57,7 +57,7 @@ public class Crypto {
 		
 	}
 	
-	public SecretKeySpec genKey(String clave) { //Recibe un string de menos de 64 ch y devuelve la clave AES resultante
+	private static SecretKeySpec genKey(String clave) { //Recibe un string de menos de 64 ch y devuelve la clave AES resultante
 		
 		String formattedKey = formatKey(clave);
 		SecretKeySpec aesKey = null;
@@ -75,7 +75,7 @@ public class Crypto {
 		
 	}
 	
-	public String formatKey(String clave) { //Devuelve la clave con 1s detras para que mida 16, 32 o 64 ch
+	private static String formatKey(String clave) { //Devuelve la clave con 1s detras para que mida 16, 32 o 64 ch
 		String formattedKey = null;
 		if (clave.length() == 0) {
 			System.out.println("Password length must be greater than 0 \n");

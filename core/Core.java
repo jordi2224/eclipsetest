@@ -1,11 +1,16 @@
 package stega.core;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 /* Jorge Huete
  * 
  * Recursos de codigo
  * 
  */
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,6 +18,7 @@ import java.util.Arrays;
 
 import stega.core.res.ArchivoBMP;
 import stega.core.res.Crypto;
+import stega.core.res.PasswordTree;
 import stega.core.res.Ripper;
 import stega.ui.Ventana;
 
@@ -39,6 +45,7 @@ public class Core {
 
 		v.print("\n\nEncrypting file....");
 		String pass=new String(password);
+
 		//FIRMAS
 			byte[] firmaExtension = Crypto.encrypt(selExtension(ruta1).getBytes(), pass); //Firma extension
 			byte[] firmaEOF = Crypto.encrypt("SAYONARA".getBytes(), pass); //Firma End Of File
@@ -87,7 +94,9 @@ public class Core {
 			}
 		}
 		if(blockStart == 0) { //Si no encuentra la firma correcta
-			v.print("\nCould not find any valid data.\nThe selected image may not contain any information or password is wrong.");
+			v.print("\n\nCould not find any valid data.");
+			v.print("\nThe selected image may not contain any information or password is wrong.");
+			v.print("\n¯\\_(^o^)_/¯");
 			throw new Exception("End of file reached without signature");
 		}
 		
@@ -101,7 +110,7 @@ public class Core {
 		v.print("\n\nAttempting to save file.");
 		outputName = outputName + new String(extension);
 		saveFile(outputName, resultado, v);
-		v.print("Done!");
+		v.print("\nDone!  ( ͡° ͜ʖ ͡°)");
 		
 	}
 	
@@ -133,15 +142,15 @@ public class Core {
 	}
 	
 	public static byte[] concat(byte[]...arrays){ //Concatena n arrays de bytes
-	    // Determine the length of the result array
+	    // Determina el tamaño del array resultante
 	    int totalLength = 0;
 	    for (int i = 0; i < arrays.length; i++)
 	    {
 	        totalLength += arrays[i].length;
 	    }
-	    // create the result array
+	    // crea el array resultante
 	    byte[] result = new byte[totalLength];
-	    // copy the source arrays into the result array
+	    // copia los arrays
 	    int currentIndex = 0;
 	    for (int i = 0; i < arrays.length; i++)
 	    {
@@ -172,7 +181,7 @@ public class Core {
 	public static char selSlash(String ruta) { //Busca el caracter delimitador de una ruta "\" o "/"
 		char res = '\0';
 		for(int i = ruta.length()-1; i >0; i--) {
-			if (ruta.toCharArray()[i]=='/'|| ruta.toCharArray()[i]=='/') {
+			if (ruta.toCharArray()[i]=='/'|| ruta.toCharArray()[i]=='\\') {
 				i=0; //Salimos del bucle for
 				res = ruta.toCharArray()[i];
 			}
@@ -212,6 +221,54 @@ public class Core {
 				v.print("\nError saving to file!\n");	
 				throw new IllegalStateException("something is wrong", e);
 		}
+	}
+	
+	public static void guardarPass(PasswordTree pTree) {
+		try
+		{
+			//v.print("Attempting to save password file...\n");
+			FileOutputStream fos = new FileOutputStream("pTree.obj");
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			oos.writeObject(pTree);
+
+			oos.close();
+			fos.close();
+		}
+		catch(IOException e)
+		{
+			//v.print("Couldn't save password file.\n");
+		}
+	}
+	
+	public static PasswordTree leerPass() throws IOException {
+		PasswordTree pTree = null;
+		try
+		{
+			FileInputStream fis = new FileInputStream("pTree.obj");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			pTree = (PasswordTree) ois.readObject();
+			ois.close();
+			fis.close();
+		}
+		catch(ClassNotFoundException e)
+		{
+			System.out.println("Clase Agenda/Persona no encontrada");
+		}
+		catch(FileNotFoundException e)
+		{
+			//Desarrollo: e.printStackTrace();
+			//Solo en Producción:
+			throw new FileNotFoundException();
+		}
+		catch(IOException e)
+		{
+			//Desarrollo: e.printStackTrace();
+			//Solo en Producción:
+			throw new IOException();
+		}
+
+		return pTree;
 	}
 
 }
