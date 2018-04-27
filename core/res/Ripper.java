@@ -1,6 +1,6 @@
 package stega.core.res;
 
-import java.io.IOException;
+import stega.core.res.ByteHandlingException;
 
 //Riiiiiiiip!
 
@@ -35,12 +35,12 @@ public class Ripper {
 		return bigBoss;
 	}
 	
-	public static byte[] insertBytes(byte[] vessel, byte payload, int N) throws IOException { 	//Inserta el byte payload recortado en vessel
+	public static byte[] insertBytes(byte[] vessel, byte payload, int N) throws ByteHandlingException { 	//Inserta el byte payload recortado en vessel
 																						//N es el tamaño de recorte
 		if (N != 1 && N != 2 && N != 4) {
-			throw new IOException("Non divisible number");
+			throw new ByteHandlingException("Non divisible number");
 		}else if(8/N != vessel.length) {
-			throw new IOException("Wrong byte array length");
+			throw new ByteHandlingException("Wrong byte array length");
 		}else {
 			for (int i=0; i< vessel.length; i++) {
 				vessel[i]=insertBits(vessel[i], (byte)(payload >> (8-(i+1)*N)), N);
@@ -70,7 +70,7 @@ public class Ripper {
 		return message;
 	}
 
-	public static byte[] insertByteArray(byte[] matOrigen, byte[] paquete) throws IOException{
+	public static byte[] insertByteArray(byte[] matOrigen, byte[] paquete) throws ByteHandlingException{
 		try{
 			for(int i = 0; i< paquete.length; i++) {
 				byte[] hiddenBytes = Ripper.insertBytes(new byte[] {matOrigen[i*4], matOrigen[i*4+1], matOrigen[i*4+2], matOrigen[i*4+3]}, paquete[i], 2);
@@ -79,8 +79,8 @@ public class Ripper {
 				matOrigen[i*4+2]=hiddenBytes[2];
 				matOrigen[i*4+3]=hiddenBytes[3];
 			}
-		}catch (Exception e) {
-			throw new IOException("File to big, Out of bounds");
+		}catch (NullPointerException e1) {
+			throw new ByteHandlingException("File to big, Out of bounds");
 		}
 		return matOrigen;
 

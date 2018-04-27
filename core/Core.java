@@ -236,10 +236,10 @@ public class Core {
 			v.print("Closed\n");
 	}
 	
-	public static PasswordTree leerPass(Ventana v) throws IOException, ClassNotFoundException {
+	public static PasswordTree leerPass(Ventana v, String ruta) throws IOException, ClassNotFoundException {
 		PasswordTree pTree = null;
 		v.print("Abriendo archivo\n");
-		FileInputStream fis = new FileInputStream("pTree.obj");
+		FileInputStream fis = new FileInputStream(ruta);
 		v.print("Archivo abierto\n");
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		v.print("Leyendo objeto\n");

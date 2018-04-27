@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import stega.core.res.Password;
 
 public class PasswordTree implements java.io.Serializable{
@@ -44,7 +43,7 @@ public class PasswordTree implements java.io.Serializable{
 		return hm;
 	}
 	
-	public JTree toJTree(String metaClave) {
+	public JTree toJTree(String metaClave) throws WrongPasswordException {
 	
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(this.getName());
         
@@ -54,12 +53,8 @@ public class PasswordTree implements java.io.Serializable{
         	
         	for(Password tempPass : this.getMap().get(carpeta)) {
         		DefaultMutableTreeNode dominio = null;
-				try {
-					dominio = new DefaultMutableTreeNode(tempPass.getDominio() + ":  " + new String(tempPass.decryptPassword("MASTER")));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-        		
+				dominio = new DefaultMutableTreeNode(tempPass.getDominio() + ":  " + new String(tempPass.decryptPassword("MASTER")));
+				
         		tipo.add(dominio);
 
         	}

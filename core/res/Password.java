@@ -3,8 +3,8 @@ package stega.core.res;
 import stega.core.res.Crypto;
 
 import java.util.Arrays;
-
 import stega.core.Core;
+import stega.core.res.WrongPasswordException;
 
 public class Password implements java.io.Serializable{
 	
@@ -25,7 +25,7 @@ public class Password implements java.io.Serializable{
 		this.dominio = dominio;
 	}
 	
-	public byte[] decryptPassword(String metaClave) throws Exception { //TODO crear nueva excepcion
+	public byte[] decryptPassword(String metaClave) throws WrongPasswordException { //TODO crear nueva excepcion
 		byte[] res = null;
 		
 		res = Crypto.decrypt(clave, metaClave);
@@ -33,7 +33,7 @@ public class Password implements java.io.Serializable{
 		if(Arrays.equals(truncatedRes,signature)) {
 			res = Arrays.copyOfRange(res, 0, res.length-5);
 		}else {
-			throw new Exception("Wrong encrytpion key");
+			throw new WrongPasswordException("Wrong encrytpion key");
 		}
 		
 		return res;

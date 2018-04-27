@@ -21,6 +21,7 @@ import java.awt.Dimension;
 
 import stega.core.res.Password;
 import stega.core.res.PasswordTree;
+import stega.core.res.WrongPasswordException;
 
 
 /* Jorge Huete
@@ -37,6 +38,7 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     private JFileChooser fc1;
     private JFileChooser fc2;
     private JFileChooser fc3;
+    private JFileChooser fc4;
     
     
     //private static final long serialVersionUID = 1L;
@@ -106,10 +108,10 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     
     Ventana(){ //Constructor
         super();
-        /**/this.setLayout(new BorderLayout(0, 0));
+        this.setLayout(new BorderLayout(0, 0));
         
         tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        /**/this.add(tabbedPane, BorderLayout.CENTER);
+        this.add(tabbedPane, BorderLayout.CENTER);
         
         panelOcultar = new JPanel();
         tabbedPane.addTab("Encrypt", null, panelOcultar, null);
@@ -353,19 +355,31 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
         openLibraryButton.addActionListener(new ActionListener() {
         	@Override
         	public void actionPerformed(ActionEvent e) {
-    			Ventana.this.print("Attempting to load tree\n");
-        		try {
-					Ventana.this.passwords = Core.leerPass(Ventana.this);
-	        		Ventana.this.rebuildTree("MASTER");
-	        		Ventana.this.print("Password file loaded!\n");
-	        		Ventana.this.print(Ventana.this.passwords.getName());
+        		
+        		int returnVal = Ventana.this.fc4.showOpenDialog(Ventana.this);
+	        	
+	        	if (returnVal == JFileChooser.APPROVE_OPTION) {
+	        		File selectedFile = fc4.getSelectedFile();
+	        		
+	        		ClavePrompt preguntaClave = new ClavePrompt();
+	        		
+	        		char[] clave = preguntaClave.getClave(Ventana.this);
+	        		Ventana.this.print("Contraseña recibida!");
+	        		
+	        		Ventana.this.print("Attempting to load tree\n");
+	        		try {
+						Ventana.this.passwords = Core.leerPass(Ventana.this,selectedFile.getAbsolutePath());
+		        		Ventana.this.rebuildTree("MASTER");
+		        		Ventana.this.print("Password file loaded!\n");
+		        		Ventana.this.print(Ventana.this.passwords.getName());
 
-				}catch (IOException e1) {
-					Ventana.this.print("Error reading file!\n");
-				} catch (ClassNotFoundException e1) {
-					print("Clase no encontrada\n");
-					e1.printStackTrace();
-				}
+					}catch (IOException e1) {
+						Ventana.this.print("Error reading file!\n");
+					} catch (ClassNotFoundException e1) {
+						print("Clase no encontrada\n");
+						e1.printStackTrace();
+					}
+	        	}
         	}
         });
         openSavePanel.add(openLibraryButton);
@@ -515,6 +529,7 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     private void startRightJComponents() {
         fc3 = new JFileChooser();
         fc3.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fc4 = new JFileChooser();
     }
     
     private void startLeftJComponents() {
@@ -539,16 +554,11 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     	
     	Ventana v = new Ventana();
     	
-    	PasswordTree contrasprueba = new PasswordTree("Jorge");
-    	contrasprueba.addPassword("Social", new Password("google.es", "holahola".getBytes(), "MASTER"));
-    	Core.guardarPass(v, contrasprueba);
-    	
-    	/*
     	v.log.append("Tloc, Nice! \n");
     	v.log.append("Made by Jorge Huete: jorgehuetes@gmail.com \n");
     	v.log.append("All permission for use, modification and distribution is hereby granted to all public"
     			+ " as long as it is for good and not evil. \n\n\n");
-    	*/
+    	
     	v.setSize(801, 451); //Shhhhhh nuestro secreto
     	
     }
@@ -558,7 +568,12 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     	
     	JTreePanel.remove(tree);
     	
-    	tree = passwords.toJTree(clave); //TODO usar clave del usuario
+    	try {
+			tree = passwords.toJTree(clave);
+		} catch (WrongPasswordException e) {
+			JOptionPane.showMessageDialog(Ventana.this, "Wrong Password for selected file!");
+			e.printStackTrace();
+		} 
         
         JTreePanel.add(tree, BorderLayout.CENTER);
         Ventana.this.tree.revalidate();
