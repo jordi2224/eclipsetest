@@ -355,12 +355,16 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
         	public void actionPerformed(ActionEvent e) {
     			Ventana.this.print("Attempting to load tree\n");
         		try {
-					Ventana.this.passwords = Core.leerPass();
-	        		Ventana.this.rebuildTree();
+					Ventana.this.passwords = Core.leerPass(Ventana.this);
+	        		Ventana.this.rebuildTree("MASTER");
 	        		Ventana.this.print("Password file loaded!\n");
+	        		Ventana.this.print(Ventana.this.passwords.getName());
 
 				}catch (IOException e1) {
 					Ventana.this.print("Error reading file!\n");
+				} catch (ClassNotFoundException e1) {
+					print("Clase no encontrada\n");
+					e1.printStackTrace();
 				}
         	}
         });
@@ -372,7 +376,7 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
         	public void actionPerformed(ActionEvent e) {
         		
         		try {
-        		Core.guardarPass(Ventana.this.passwords);
+        		Core.guardarPass(Ventana.this, Ventana.this.passwords);
         		}catch(Exception e1) {
         			
         		}
@@ -392,7 +396,7 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
         JTreePanel.add(tree, BorderLayout.CENTER);
         
         passwords = new PasswordTree("--VACIO--");
-        rebuildTree();
+        rebuildTree("MASTER");
         
         //}TREE
         
@@ -537,25 +541,28 @@ public class Ventana extends JFrame implements ActionListener , ComponentListene
     	
     	PasswordTree contrasprueba = new PasswordTree("Jorge");
     	contrasprueba.addPassword("Social", new Password("google.es", "holahola".getBytes(), "MASTER"));
-    	Core.guardarPass(contrasprueba);
+    	Core.guardarPass(v, contrasprueba);
     	
+    	/*
     	v.log.append("Tloc, Nice! \n");
     	v.log.append("Made by Jorge Huete: jorgehuetes@gmail.com \n");
     	v.log.append("All permission for use, modification and distribution is hereby granted to all public"
     			+ " as long as it is for good and not evil. \n\n\n");
-    	
+    	*/
     	v.setSize(801, 451); //Shhhhhh nuestro secreto
     	
     }
     
-    public void rebuildTree() {
+    public void rebuildTree(String clave) {
     	
     	
     	JTreePanel.remove(tree);
     	
-    	tree = passwords.toJTree("MASTER"); //TODO usar clave del usuario
+    	tree = passwords.toJTree(clave); //TODO usar clave del usuario
         
         JTreePanel.add(tree, BorderLayout.CENTER);
+        Ventana.this.tree.revalidate();
+		Ventana.this.tree.repaint();
 
     }
 

@@ -1,9 +1,7 @@
 package stega.core.res;
 
-import java.io.IOException;
-import java.io.Serializable;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,8 +10,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import stega.core.res.Password;
 
-public class PasswordTree implements Serializable{
+public class PasswordTree implements java.io.Serializable{
 	
+
 	String name;
 	public String getName() {
 		return name;

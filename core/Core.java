@@ -223,51 +223,31 @@ public class Core {
 		}
 	}
 	
-	public static void guardarPass(PasswordTree pTree) {
-		try
-		{
-			//v.print("Attempting to save password file...\n");
+	public static void guardarPass(Ventana v, PasswordTree pTree) throws IOException {
+			v.print("Attempting to save password file...\n");
 			FileOutputStream fos = new FileOutputStream("pTree.obj");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
-
+			
+			v.print("Writing object\n");
 			oos.writeObject(pTree);
-
+			
 			oos.close();
 			fos.close();
-		}
-		catch(IOException e)
-		{
-			//v.print("Couldn't save password file.\n");
-		}
+			v.print("Closed\n");
 	}
 	
-	public static PasswordTree leerPass() throws IOException {
+	public static PasswordTree leerPass(Ventana v) throws IOException, ClassNotFoundException {
 		PasswordTree pTree = null;
-		try
-		{
-			FileInputStream fis = new FileInputStream("pTree.obj");
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			pTree = (PasswordTree) ois.readObject();
-			ois.close();
-			fis.close();
-		}
-		catch(ClassNotFoundException e)
-		{
-			System.out.println("Clase Agenda/Persona no encontrada");
-		}
-		catch(FileNotFoundException e)
-		{
-			//Desarrollo: e.printStackTrace();
-			//Solo en Producción:
-			throw new FileNotFoundException();
-		}
-		catch(IOException e)
-		{
-			//Desarrollo: e.printStackTrace();
-			//Solo en Producción:
-			throw new IOException();
-		}
-
+		v.print("Abriendo archivo\n");
+		FileInputStream fis = new FileInputStream("pTree.obj");
+		v.print("Archivo abierto\n");
+		ObjectInputStream ois = new ObjectInputStream(fis);
+		v.print("Leyendo objeto\n");
+		pTree = (PasswordTree) ois.readObject();
+		v.print("Objeto leido\n");
+		ois.close();
+		fis.close();
+	
 		return pTree;
 	}
 

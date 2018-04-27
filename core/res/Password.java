@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import stega.core.Core;
 
-public class Password{
+public class Password implements java.io.Serializable{
 	
 	String dominio;
 	byte[] clave;
