@@ -16,5 +16,17 @@ La técnica de esteganografia utilizada en por este código modifica ligeramente
 Ademas, los archivos ocultos son encriptados con AES 128-bit.
 
 ## Como usar:
-	# Esteganografia
-  ![alt text](https://i.imgur.com/RLCFo4V.png)
+	## Esteganografia
+	### Encriptar
+	![alt text](https://i.imgur.com/RLCFo4V.png)
+  1. Seleccionar el archivo a ocultar y la imagen (en formato .bmp sín compresión, transparencia y 8bits por color)
+  2. Elegir el nombre del archivo de destino
+  3. Dar una contraseña y clicar en "Hide File"
+  
+  	### Desencriptar
+	![alt text](https://imgur.com/z8hnuUf.png)
+  1. Seleccionar un archivo que contenga información oculta y el archivo de destino (la extensión será sobreescrita)
+  2. Introducir la contraseña y clicar en "Find File"
+  
+  	### Gestor de contraseñas
+
