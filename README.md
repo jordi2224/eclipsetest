@@ -32,5 +32,6 @@ Ademas, los archivos ocultos son encriptados con AES 128-bit.
   ### Gestor de contraseñas
 Aparte de poder ocultar y recuperar información en imagenes .bmp este programa también puede gestionar contraseñas.
 ![alt text](https://imgur.com/MBT9ZMb.png)
+
 Nota: Si la contraseña usaba al abrir una librería es incorrecta no podrás ver las contraseñas y dará "ERROR"
 Nota 2: ¡Prueba a guardar tu libreria en una imagen!
