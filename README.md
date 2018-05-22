@@ -13,4 +13,8 @@ Esta técnica de esconder información no es nueva, se llama esteganografia
 
 ## Seguridad
 La técnica de esteganografia utilizada en por este código modifica ligeramente las imagenes.
-Ademas, los archivos ocultos son encriptados con AES
+Ademas, los archivos ocultos son encriptados con AES 128-bit.
+
+## Como usar:
+	# Esteganografia
+  ![alt text](https://i.imgur.com/RLCFo4V.png)
