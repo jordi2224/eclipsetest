@@ -20,6 +20,7 @@ Ademas, los archivos ocultos son encriptados con AES 128-bit.
 #### Encriptar
 	![alt text](https://i.imgur.com/RLCFo4V.png)
   1. Seleccionar el archivo a ocultar y la imagen (en formato .bmp sín compresión, transparencia y 8bits por color)
+  Algunas fotos compatibles vienen con el programa en una carpeta llamada "images"
   2. Elegir el nombre del archivo de destino
   3. Dar una contraseña y clicar en "Hide File"
   
@@ -29,4 +30,4 @@ Ademas, los archivos ocultos son encriptados con AES 128-bit.
   2. Introducir la contraseña y clicar en "Find File"
   
   ### Gestor de contraseñas
-
+Aparte de poder ocultar y recuperar información en imagenes .bmp este programa también puede gestionar contraseñas.
